@@ -96,6 +96,12 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/fonts/
+
+  fonts:
+    - family: Conthrax  # you can name it whatever you want
+      fonts:
+        - asset: assets/fonts/175-font.otf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

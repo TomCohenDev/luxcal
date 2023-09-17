@@ -9,6 +9,8 @@ abstract class AppTheme {
   }
 
   late Color bannerColor;
+  late Color bannerLightColor;
+
   late Color cardColor;
   late Color cardTextColor;
   late Color cardTitleTextColor;
@@ -35,7 +37,9 @@ abstract class AppTheme {
 }
 
 class LightModeTheme extends AppTheme {
-  final Color bannerColor = const Color(0xFF7d54cd);
+  final Color bannerColor = const Color(0xFF795ad9);
+  final Color bannerLightColor = const Color(0xFF7f60df);
+
   final Color cardColor = Colors.white;
 
   final Color backgroundColor = const Color(0xFFf7f7f7);
@@ -70,6 +74,8 @@ class ThemeTypography extends Typography {
 
   final AppTheme theme;
   final _defaultFontFamily = 'Lexend Deca';
+
+
 
   String get textFieldTextFamily => _defaultFontFamily;
   TextStyle get textFieldText => GoogleFonts.getFont(
