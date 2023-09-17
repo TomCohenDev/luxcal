@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:luxcal_app/utils/screen_sizes.dart';
 import 'package:luxcal_app/widgets/first_screen/logic.dart';
 import 'package:luxcal_app/widgets/first_screen/styles.dart';
 
 import '../../utils/theme.dart';
+import '../custom/ring.dart';
 
 class FirstScreenWidget extends StatelessWidget {
   FirstScreenWidget({super.key});
+  final storage = GetStorage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GestureDetector(
         onTap: () {
-          navigateToRouteWidget(context);
+          navigateToLoginWidget(context);
+          storage.write('display_first_screen', false);
         },
         child: Container(
           height: double.infinity,
@@ -110,26 +114,4 @@ class FirstScreenWidget extends StatelessWidget {
   }
 }
 
-class RingPainter extends CustomPainter {
-  final double thickness;
-  final double radius;
-  final Color color;
 
-  RingPainter(this.thickness, this.radius, this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = thickness;
-
-    canvas.drawCircle(center, radius, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}

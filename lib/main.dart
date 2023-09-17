@@ -37,6 +37,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    userStream = loginFirebaseUserStream()
+      ..listen((user) => initialUser ?? setState(() => initialUser = user));
     storage.writeIfNull('display_first_screen', true);
   }
 
@@ -46,7 +48,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: Utils.messengerKey,
       home: !storage.read('display_first_screen')
-          ? currentUser!.loggedIn
+          ? (currentUser != null && currentUser!.loggedIn)
               ? HomeWidget()
               : LoginWidget()
           : FirstScreenWidget(),
