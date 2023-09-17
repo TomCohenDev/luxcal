@@ -2,42 +2,60 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:luxcal_app/utils/utils.dart';
+import 'package:luxcal_app/widgets/first_screen/first_screen_view.dart';
+import 'package:luxcal_app/widgets/home/home_view.dart';
+import 'package:luxcal_app/widgets/login/login_view.dart';
+
+import 'backend/auth/auth_util.dart';
+import 'backend/auth/firebase_user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await GetStorage.init();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final storage = GetStorage();
+
+  late Stream<LoginFirebaseUser> userStream;
+  LoginFirebaseUser? initialUser;
+  final authUserSub = authenticatedUserStream.listen((_) {});
 
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    storage.writeIfNull('display_first_screen', true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: Utils.messengerKey,
+      home: !storage.read('display_first_screen')
+          ? currentUser!.loggedIn
+              ? HomeWidget()
+              : LoginWidget()
+          : FirstScreenWidget(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
