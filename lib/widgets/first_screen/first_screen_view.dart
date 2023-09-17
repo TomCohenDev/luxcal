@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:luxcal_app/utils/screen_sizes.dart';
-import 'package:luxcal_app/widgets/first_screen/logic.dart';
-import 'package:luxcal_app/widgets/first_screen/styles.dart';
+import 'package:luxcal_app/widgets/first_screen/first_screen_logic.dart';
+import 'package:luxcal_app/widgets/first_screen/first_screen_styles.dart';
 
 import '../../utils/theme.dart';
 import '../custom/ring.dart';
 
 class FirstScreenWidget extends StatelessWidget {
-  FirstScreenWidget({super.key});
+  final AppTheme theme;
+  final AppThemeTypography typography;
+  FirstScreenWidget({super.key})
+      : theme = AppTheme.lightMode,
+        typography = AppThemeTypography(AppTheme.lightMode);
   final storage = GetStorage();
 
   @override
@@ -23,12 +27,11 @@ class FirstScreenWidget extends StatelessWidget {
         child: Container(
           height: double.infinity,
           width: double.infinity,
-          color: AppTheme.of(context).bannerLightColor,
+          color: theme.bannerLightColor,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              ...backgroundRings(
-                  5, 50, 140, 60, AppTheme.of(context).bannerColor),
+              ...backgroundRings(5, 50, 140, 60, theme.bannerColor),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
@@ -113,5 +116,3 @@ class FirstScreenWidget extends StatelessWidget {
     return rings;
   }
 }
-
-

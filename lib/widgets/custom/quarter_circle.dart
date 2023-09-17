@@ -50,13 +50,18 @@ class QuarterCirclePainter extends CustomPainter {
 class QuarterCircle extends StatelessWidget {
   final Color color;
   final QuarterPosition position;
+  final double size;
 
-  QuarterCircle({required this.color, this.position = QuarterPosition.topRight});
+  QuarterCircle({required this.color, this.position = QuarterPosition.topRight, this.size = 100.0});
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: QuarterCirclePainter(color, position),
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: QuarterCirclePainter(color, position),
+      ),
     );
   }
 }
