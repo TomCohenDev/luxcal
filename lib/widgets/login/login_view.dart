@@ -95,7 +95,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               textField: TextField(
                 controller: _model.passwordTextController,
                 textCapitalization: TextCapitalization.none,
-                obscureText: !_model.passwordVisibility,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: widget.typography.textfieldHintText,
@@ -103,20 +103,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide.none,
-                  ),
-                  suffixIcon: InkWell(
-                    onTap: () => setState(
-                      () => _model.passwordVisibility =
-                          !_model.passwordVisibility,
-                    ),
-                    focusNode: FocusNode(skipTraversal: true),
-                    child: Icon(
-                      _model.passwordVisibility
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: widget.theme.textFieldTextColor,
-                      size: 24.0,
-                    ),
                   ),
                   fillColor: widget.theme.cardColor,
                 ),
@@ -130,6 +116,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             child: CustomMainButton(
               buttonText: "Sign In",
               height: 48,
+              onPressed: () {},
             ),
           ),
           Padding(
