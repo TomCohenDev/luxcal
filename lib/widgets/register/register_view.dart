@@ -183,6 +183,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     _model.emailTextController!.text,
                     _model.passwordTextController!.text,
                     _model.nameTextController!.text);
+                    
               },
             ),
           ),

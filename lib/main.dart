@@ -1,3 +1,4 @@
+import 'package:LuxCal/navigation/navigation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       scaffoldMessengerKey: Utils.messengerKey,
       home: !storage.read('display_first_screen')
           ? (currentUser != null && currentUser!.loggedIn)
-              ? HomeWidget()
+              ? NavigationWidget()
               : LoginWidget()
           : FirstScreenWidget(),
     );

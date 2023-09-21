@@ -22,19 +22,14 @@ void updateNickname(String nickname, String nicknameColor) {
 }
 
 void navigateToHomeWidget(context) {
-  Navigator.push(
+
+  Navigator.pushAndRemoveUntil(
     context,
     MaterialPageRoute(
       builder: (context) => HomeWidget(),
     ),
+    (r) => false,
   );
-  // Navigator.pushAndRemoveUntil(
-  //   context,
-  //   MaterialPageRoute(
-  //     builder: (context) => HomeWidget(),
-  //   ),
-  //   (r) => false,
-  // );
 }
 
 bool isValidated(String? text1, String? text2) {

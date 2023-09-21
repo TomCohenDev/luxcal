@@ -123,7 +123,15 @@ class _LoginWidgetState extends State<LoginWidget> {
             child: CustomMainButton(
               buttonText: "Sign In",
               height: 48,
-              onPressed: () {},
+              onPressed: () async {
+                if (!isFormValidated(formKey)) return;
+                await signIn(
+                  context,
+                  _model.emailTextController.text.trim(),
+                  _model.passwordTextController.text.trim(),
+                );
+                navigateToHomeWidget(context);
+              },
             ),
           ),
           Padding(
