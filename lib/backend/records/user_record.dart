@@ -32,6 +32,35 @@ abstract class UserRecord implements Built<UserRecord, UserRecordBuilder> {
       .snapshots()
       .map((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
+  static Future<UserRecord> getDocumentOnce(DocumentReference ref) => ref
+      .get()
+      .then((s) => serializers.deserializeWith(serializer, serializedData(s))!);
+
   factory UserRecord([void Function(UserRecordBuilder)? updates]) =
       _$UserRecord;
+}
+
+Map<String, dynamic> createUsersRecordData({
+  String? email,
+  String? uid,
+  DateTime? createdTime,
+  DateTime? birth,
+  String? phoneNumber,
+  String? displayName,
+  // DocumentReference? sets,
+}) {
+  final firestoreData = serializers.toFirestore(
+    UserRecord.serializer,
+    UserRecord(
+      (u) => u
+        ..email = email
+        ..uid = uid
+        ..createdTime = createdTime
+        ..birth = birth
+        ..phoneNumber = phoneNumber
+        ..displayName = displayName,
+    ),
+  );
+
+  return firestoreData;
 }

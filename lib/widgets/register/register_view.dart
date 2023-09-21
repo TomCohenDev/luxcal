@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:luxcal_app/utils/theme.dart';
-import 'package:luxcal_app/widgets/custom/model.dart';
-import 'package:luxcal_app/widgets/login/login_model.dart';
+import 'package:LuxCal/utils/theme.dart';
+import 'package:LuxCal/widgets/custom/model.dart';
+import 'package:LuxCal/widgets/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
 import '../custom/banner.dart';
@@ -35,9 +35,16 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   }
 
   @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Container(
           height: ScreenInfo(context).screenHeight,
@@ -72,6 +79,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       key: formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(child: Container()),
           CustomTextField(
@@ -170,7 +178,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
               height: 48,
               onPressed: () async {
                 if (!isFormValidated(formKey)) return;
-                await signUp();
+                await signUp(
+                    context,
+                    _model.emailTextController!.text,
+                    _model.passwordTextController!.text,
+                    _model.nameTextController!.text);
               },
             ),
           ),

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.luxcal" "\0"
-            VALUE "FileDescription", "luxcal_app" "\0"
+            VALUE "FileDescription", "LuxCal" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "luxcal_app" "\0"
+            VALUE "InternalName", "LuxCal" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.luxcal. All rights reserved." "\0"
-            VALUE "OriginalFilename", "luxcal_app.exe" "\0"
-            VALUE "ProductName", "luxcal_app" "\0"
+            VALUE "OriginalFilename", "LuxCal.exe" "\0"
+            VALUE "ProductName", "LuxCal" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

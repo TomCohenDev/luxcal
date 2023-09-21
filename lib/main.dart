@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:luxcal_app/utils/utils.dart';
-import 'package:luxcal_app/widgets/first_screen/first_screen_view.dart';
-import 'package:luxcal_app/widgets/home/home_view.dart';
-import 'package:luxcal_app/widgets/login/login_view.dart';
+import 'package:LuxCal/utils/utils.dart';
+import 'package:LuxCal/widgets/first_screen/first_screen_view.dart';
+import 'package:LuxCal/widgets/home/home_view.dart';
+import 'package:LuxCal/widgets/login/login_view.dart';
+import 'package:LuxCal/widgets/nickname/nickname_view.dart';
 
 import 'backend/auth/auth_util.dart';
 import 'backend/auth/firebase_user_provider.dart';

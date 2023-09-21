@@ -1,6 +1,6 @@
 {
-    "name": "luxcal_app",
-    "short_name": "luxcal_app",
+    "name": "LuxCal",
+    "short_name": "LuxCal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

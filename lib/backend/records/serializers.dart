@@ -1,59 +1,80 @@
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:luxcal_app/backend/records/user_record.dart';
+import 'package:LuxCal/backend/records/user_record.dart';
 import '../../utils/latlng.dart';
 import 'user_record.dart';
 import 'package:built_collection/src/list.dart';
 part 'serializers.g.dart';
 
-
 const kDocumentReferenceField = 'Document__Reference__Field';
 
-@SerializersFor(const [UserRecord])
-final Serializers serializers =
-    (_$serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
+@SerializersFor(
+  const [
+    UserRecord,
+  ],
+)
+final Serializers serializers = (_$serializers.toBuilder()
+      ..add(DateTimeSerializer())
+      ..addPlugin(StandardJsonPlugin()))
+    .build();
 
-class FirestoreUtilData {
-  const FirestoreUtilData({
-    this.fieldValues = const {},
-    this.clearUnsetFields = true,
-    this.create = false,
-    this.delete = false,
-  });
-  final Map<String, dynamic> fieldValues;
-  final bool clearUnsetFields;
-  final bool create;
-  final bool delete;
-  static String get name => 'firestoreUtilData';
+extension SerializerExtensions on Serializers {
+  Map<String, dynamic> toFirestore<T>(Serializer<T> serializer, T object) =>
+      mapToFirestore(serializeWith(serializer, object) as Map<String, dynamic>);
 }
 
-class FirestoreUtilDataSerializer
-    implements PrimitiveSerializer<FirestoreUtilData> {
-  final bool structured = false;
+class DateTimeSerializer implements PrimitiveSerializer<DateTime> {
   @override
-  final Iterable<Type> types = new BuiltList<Type>([FirestoreUtilData]);
+  final Iterable<Type> types = new BuiltList<Type>([DateTime]);
   @override
-  final String wireName = 'FirestoreUtilData';
+  final String wireName = 'DateTime';
 
   @override
-  Object serialize(Serializers serializers, FirestoreUtilData firestoreUtilData,
-      {FullType specifiedType= FullType.unspecified}) {
-    return firestoreUtilData;
+  Object serialize(Serializers serializers, DateTime dateTime,
+      {FullType specifiedType = FullType.unspecified}) {
+    return dateTime;
   }
 
   @override
-  FirestoreUtilData deserialize(Serializers serializers, Object serialized,
-          {FullType specifiedType= FullType.unspecified}) =>
-      serialized as FirestoreUtilData;
+  DateTime deserialize(Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      serialized as DateTime;
 }
 
-Map<String, dynamic> serializedData(DocumentSnapshot doc) => {
-      ...mapFromFirestore(doc.data() as Map<String, dynamic>),
-      kDocumentReferenceField: doc.reference
-    };
+DateTime get getCurrentTimestamp => DateTime.now();
 
-    Map<String, dynamic> mapFromFirestore(Map<String, dynamic> data) =>
+extension DateTimeComparisonOperators on DateTime {
+  bool operator <(DateTime other) => isBefore(other);
+  bool operator >(DateTime other) => isAfter(other);
+  bool operator <=(DateTime other) => this < other || isAtSameMomentAs(other);
+  bool operator >=(DateTime other) => this > other || isAtSameMomentAs(other);
+}
+
+Map<String, dynamic> mapToFirestore(Map<String, dynamic> data) =>
+    data.where((k, v) => k != FirestoreUtilData.name).map((key, value) {
+      // Handle GeoPoint
+      if (value is LatLng) {
+        value = value.toGeoPoint();
+      }
+      // Handle list of GeoPoint
+      if (value is Iterable && value.isNotEmpty && value.first is LatLng) {
+        value = value.map((v) => (v as LatLng).toGeoPoint()).toList();
+      }
+      // Handle nested data.
+      if (value is Map) {
+        value = mapFromFirestore(value as Map<String, dynamic>);
+      }
+      // Handle list of nested data.
+      if (value is Iterable && value.isNotEmpty && value.first is Map) {
+        value = value
+            .map((v) => mapFromFirestore(v as Map<String, dynamic>))
+            .toList();
+      }
+      return MapEntry(key, value);
+    });
+
+Map<String, dynamic> mapFromFirestore(Map<String, dynamic> data) =>
     mergeNestedFields(data)
         .where((k, _) => k != FirestoreUtilData.name)
         .map((key, value) {
@@ -86,7 +107,50 @@ Map<String, dynamic> serializedData(DocumentSnapshot doc) => {
       return MapEntry(key, value);
     });
 
-    Map<String, dynamic> mergeNestedFields(Map<String, dynamic> data) {
+extension GeoPointExtension on LatLng {
+  GeoPoint toGeoPoint() => GeoPoint(latitude, longitude);
+}
+
+class FirestoreUtilData {
+  const FirestoreUtilData({
+    this.fieldValues = const {},
+    this.clearUnsetFields = true,
+    this.create = false,
+    this.delete = false,
+  });
+  final Map<String, dynamic> fieldValues;
+  final bool clearUnsetFields;
+  final bool create;
+  final bool delete;
+  static String get name => 'firestoreUtilData';
+}
+
+class FirestoreUtilDataSerializer
+    implements PrimitiveSerializer<FirestoreUtilData> {
+  final bool structured = false;
+  @override
+  final Iterable<Type> types = new BuiltList<Type>([FirestoreUtilData]);
+  @override
+  final String wireName = 'FirestoreUtilData';
+
+  @override
+  Object serialize(Serializers serializers, FirestoreUtilData firestoreUtilData,
+      {FullType specifiedType = FullType.unspecified}) {
+    return firestoreUtilData;
+  }
+
+  @override
+  FirestoreUtilData deserialize(Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      serialized as FirestoreUtilData;
+}
+
+Map<String, dynamic> serializedData(DocumentSnapshot doc) => {
+      ...mapFromFirestore(doc.data() as Map<String, dynamic>),
+      kDocumentReferenceField: doc.reference
+    };
+
+Map<String, dynamic> mergeNestedFields(Map<String, dynamic> data) {
   final nestedData = data.where((k, _) => k.contains('.'));
   final fieldNames = nestedData.keys.map((k) => k.split('.').first).toSet();
   // Remove nested values (e.g. 'foo.bar') and merge them into a map.

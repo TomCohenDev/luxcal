@@ -13,6 +13,7 @@ class CustomMainButton extends StatelessWidget {
     this.radios,
     this.textSize,
     this.buttonColor = const Color(0xFF7d54cd),
+    this.buttonTextColor = Colors.white,
     this.active = true,
     required this.buttonText,
   })  : theme = AppTheme.lightMode,
@@ -23,6 +24,8 @@ class CustomMainButton extends StatelessWidget {
   double? radios;
   double? textSize;
   Color buttonColor;
+  Color buttonTextColor;
+
   final AppTheme theme;
   final AppThemeTypography typography;
   bool active;
@@ -48,7 +51,10 @@ class CustomMainButton extends StatelessWidget {
           width: width,
           height: height,
           alignment: Alignment.center,
-          child: Text(buttonText, style: typography.buttonText),
+          child: Text(
+            buttonText,
+            style: typography.buttonText.copyWith(color: buttonTextColor),
+          ),
         ),
       ),
     );

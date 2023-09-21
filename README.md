@@ -1,4 +1,4 @@
-# luxcal_app
+# LuxCal
 
 A new Flutter project.
 

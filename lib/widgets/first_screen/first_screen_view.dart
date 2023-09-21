@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:luxcal_app/utils/screen_sizes.dart';
-import 'package:luxcal_app/widgets/first_screen/first_screen_logic.dart';
-import 'package:luxcal_app/widgets/first_screen/first_screen_styles.dart';
+import 'package:LuxCal/utils/screen_sizes.dart';
+import 'package:LuxCal/widgets/first_screen/first_screen_logic.dart';
+import 'package:LuxCal/widgets/first_screen/first_screen_styles.dart';
 
 import '../../utils/theme.dart';
 import '../custom/ring.dart';

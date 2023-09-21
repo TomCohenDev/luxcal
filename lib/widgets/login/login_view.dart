@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:luxcal_app/utils/theme.dart';
-import 'package:luxcal_app/widgets/custom/model.dart';
-import 'package:luxcal_app/widgets/login/login_model.dart';
+import 'package:LuxCal/utils/theme.dart';
+import 'package:LuxCal/widgets/custom/model.dart';
+import 'package:LuxCal/widgets/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
 import '../custom/banner.dart';
@@ -31,6 +31,13 @@ class _LoginWidgetState extends State<LoginWidget> {
     // TODO: implement initState
     super.initState();
     _model = createModel(context, () => LoginModel());
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
   }
 
   @override

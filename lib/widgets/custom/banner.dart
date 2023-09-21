@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:luxcal_app/widgets/custom/ring.dart';
+import 'package:LuxCal/widgets/custom/ring.dart';
 
 import '../../utils/screen_sizes.dart';
 import '../../utils/theme.dart';
@@ -44,15 +44,13 @@ class BannerWidget extends StatelessWidget {
                 Align(
                   alignment: Alignment(1, 1),
                   child: CustomPaint(
-                    painter: RingPainter(
-                        25, 60, theme.bannerLightColor),
+                    painter: RingPainter(25, 60, theme.bannerLightColor),
                   ),
                 ),
                 Align(
                   alignment: Alignment(-1, -1),
                   child: CustomPaint(
-                    painter: RingPainter(
-                        25, 60, theme.bannerLightColor),
+                    painter: RingPainter(25, 60, theme.bannerLightColor),
                   ),
                 ),
                 Align(
