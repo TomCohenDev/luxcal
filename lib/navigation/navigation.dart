@@ -147,39 +147,26 @@ class _NavigationWidgetState extends State<NavigationWidget> {
         backgroundColor: Colors.transparent,
         floatingActionButton: SpeedDial(
           backgroundColor: widget.theme.bannerColor,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.6,
           icon: Icons.add,
           activeIcon: Icons.close,
           // spacing: 3,
           openCloseDial: isDialOpen,
           // childPadding: const EdgeInsets.all(5),
           spaceBetweenChildren: 10,
-          dialRoot: customDialRoot
-              ? (ctx, open, toggleChildren) {
-                  return ElevatedButton(
-                    onPressed: toggleChildren,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[900],
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 18),
-                    ),
-                    child: const Text(
-                      "Custom Dial Root",
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  );
-                }
-              : null,
+
           children: [
             SpeedDialChild(
-              child: const Icon(Icons.accessibility),
-              backgroundColor: Colors.red,
+              child: const Icon(Icons.event),
+              backgroundColor: widget.theme.bannerLightColor,
               foregroundColor: Colors.white,
               label: 'Add Event',
               onTap: () {},
             ),
             SpeedDialChild(
-              child: const Icon(Icons.brush),
-              backgroundColor: Colors.deepOrange,
+              child: const Icon(Icons.newspaper),
+              backgroundColor: widget.theme.bannerLightColor,
               foregroundColor: Colors.white,
               label: 'Add News',
               onTap: () {},
@@ -188,9 +175,11 @@ class _NavigationWidgetState extends State<NavigationWidget> {
         ),
         body: tabs[_currentPageName]!,
         bottomNavigationBar: AnimatedBottomNavigationBar(
+          iconSize: 30,
           icons: iconList,
           activeIndex: activeIndex,
-          activeColor: Colors.blueGrey,
+          activeColor: widget.theme.bannerColor,
+          inactiveColor: Colors.grey,
           gapLocation: GapLocation.center,
           notchSmoothness: NotchSmoothness.defaultEdge,
           leftCornerRadius: 32,
