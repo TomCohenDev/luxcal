@@ -4,6 +4,7 @@ import 'package:LuxCal/widgets/custom/model.dart';
 import 'package:LuxCal/pages/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
+import '../../utils/utils.dart';
 import '../../widgets/custom/banner.dart';
 import '../../widgets/custom/button.dart';
 import '../../widgets/custom/quarter_circle.dart';
@@ -13,16 +14,13 @@ import 'register_logic.dart';
 import 'register_model.dart';
 
 class RegisterWidget extends StatefulWidget {
-
-  RegisterWidget({super.key})
-;
+  RegisterWidget({super.key});
 
   @override
   State<RegisterWidget> createState() => _RegisterWidgetState();
 }
 
 class _RegisterWidgetState extends State<RegisterWidget> {
-  final formKey = GlobalKey<FormState>();
   late RegisterModel _model;
 
   @override
@@ -74,7 +72,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   Widget registerForm() {
     double padding = 35;
     return Form(
-      key: formKey,
+      key: _model.formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -175,12 +173,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
               buttonText: "Sign Up",
               height: 48,
               onPressed: () async {
-                if (!isFormValidated(formKey)) return;
-                await signUp(
-                    context,
-                    _model.emailTextController!.text,
-                    _model.passwordTextController!.text,
-                    _model.nameTextController!.text);
+                await signUp(context, _model);
               },
             ),
           ),

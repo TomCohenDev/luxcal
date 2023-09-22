@@ -23,13 +23,12 @@ class NicknameWidget extends StatefulWidget {
 }
 
 class _NicknameWidgetState extends State<NicknameWidget> {
-  final formKey = GlobalKey<FormState>();
   late NicknameModel _model;
 
   void changeColor(Color color) {
     setState(() {
       _model.currentColor = color;
-      _model.currentColorText = Utils().getColorString(color.toString());
+      _model.currentColorText = Utils.getColorString(color.toString());
     });
     Navigator.pop(context);
   }
@@ -81,7 +80,7 @@ class _NicknameWidgetState extends State<NicknameWidget> {
 
   Widget nicknameForm() {
     return Form(
-      key: formKey,
+      key: _model.formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -172,13 +171,9 @@ class _NicknameWidgetState extends State<NicknameWidget> {
                   height: 48,
                   width: 120,
                   onPressed: () {
-                    Utils.showSnackBar(
-                        "Please make sure you have selected a Nickname and a Color");
                     if (!isValidated(_model.nicknameTextController.text,
                         _model.currentColorText)) return;
-                    updateNickname(_model.nicknameTextController.text,
-                        _model.currentColorText!);
-                    navigateToHomeWidget(context);
+                    onConfirm(context, _model);
                   },
                 ),
               ],

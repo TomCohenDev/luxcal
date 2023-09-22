@@ -8,6 +8,7 @@ import 'package:email_validator/email_validator.dart';
 
 class RegisterModel extends CustomModel {
   ///  State fields for stateful widgets in this page.
+  final formKey = GlobalKey<FormState>();
 
   TextEditingController? nameTextController;
   String? Function(String?)? nameTextControllerValidator;

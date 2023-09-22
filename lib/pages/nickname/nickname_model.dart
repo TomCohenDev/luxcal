@@ -10,7 +10,10 @@ class NicknameModel extends CustomModel {
   ///  State fields for stateful widgets in this page.
 
   // State field(s) for TextField widget.
+  final formKey = GlobalKey<FormState>();
+
   late TextEditingController nicknameTextController;
+  
   // State field(s) for TextField widget.
   Color? currentColor;
   String? currentColorText;

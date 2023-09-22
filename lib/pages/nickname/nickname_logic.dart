@@ -1,9 +1,8 @@
+import 'package:LuxCal/pages/nickname/nickname_model.dart';
 import 'package:flutter/material.dart';
 import 'package:LuxCal/backend/auth/auth_util.dart';
 import 'package:LuxCal/utils/utils.dart';
 import 'package:LuxCal/pages/home/home_view.dart';
-
-
 
 void updateNickname(String nickname, String nicknameColor) {
   currentUserReference!.update({
@@ -13,7 +12,6 @@ void updateNickname(String nickname, String nicknameColor) {
 }
 
 void navigateToHomeWidget(context) {
-
   Navigator.pushAndRemoveUntil(
     context,
     MaterialPageRoute(
@@ -24,10 +22,14 @@ void navigateToHomeWidget(context) {
 }
 
 bool isValidated(String? text1, String? text2) {
-
-
   if (text1 != null && text1 != "" && text2 != null || text2 != "") return true;
   Utils.showSnackBar(
       "Please make sure you have selected a Nickname and a Color");
   return false;
+}
+
+onConfirm(context, NicknameModel _model) {
+
+  updateNickname(_model.nicknameTextController.text, _model.currentColorText!);
+  navigateToHomeWidget(context);
 }

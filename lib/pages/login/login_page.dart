@@ -4,6 +4,7 @@ import 'package:LuxCal/widgets/custom/model.dart';
 import 'package:LuxCal/pages/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
+import '../../utils/utils.dart';
 import '../../widgets/custom/banner.dart';
 import '../../widgets/custom/button.dart';
 import '../../widgets/custom/quarter_circle.dart';
@@ -19,7 +20,6 @@ class LoginWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  final formKey = GlobalKey<FormState>();
   late LoginModel _model;
 
   @override
@@ -67,7 +67,7 @@ class _LoginWidgetState extends State<LoginWidget> {
 
   Widget loginForm() {
     return Form(
-      key: formKey,
+      key: _model.formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -120,12 +120,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               buttonText: "Sign In",
               height: 48,
               onPressed: () async {
-                if (!isFormValidated(formKey)) return;
-                await signIn(
-                  context,
-                  _model.emailTextController.text.trim(),
-                  _model.passwordTextController.text.trim(),
-                );
+                await signIn(context, _model);
                 navigateToHomeWidget(context);
               },
             ),

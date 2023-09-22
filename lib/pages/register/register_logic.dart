@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../backend/auth/auth_util.dart';
-import '../nickname/nickname_view.dart';
+import '../../utils/utils.dart';
+import '../nickname/nickname_page.dart';
 
-Future<void> signUp(context, String email, String password, String name) async {
+Future<void> signUp(context, _model) async {
+  if (!Utils.isFormValidated(_model.formKey)) return;
+
   final user = await createAccountWithEmail(
     context,
-    email,
-    password,
+    _model.emailTextController!.text,
+    _model.passwordTextController!.text,
   );
   if (user == null) {
     return;
   }
-  currentUserReference!.update({"display_name": name});
+  currentUserReference!
+      .update({"display_name": _model.nameTextController!.text});
 
   navigateToNicknameWidget(context);
-}
-
-bool isFormValidated(formKey) {
-  final isValid = formKey.currentState!.validate();
-  if (!isValid) return false;
-  return true;
 }
 
 void navigateToNicknameWidget(context) {

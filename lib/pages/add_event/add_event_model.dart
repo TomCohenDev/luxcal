@@ -19,7 +19,7 @@ class AddEventModel extends CustomModel {
   late FocusNode titleNode;
   late FocusNode descriptionNode;
   late FocusNode dateNode;
-  final GlobalKey<FormState> form = GlobalKey();
+  final GlobalKey<FormState> formKey = GlobalKey();
   late TextEditingController startDateController;
   late TextEditingController startTimeController;
   late TextEditingController endTimeController;

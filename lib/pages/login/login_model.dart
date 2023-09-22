@@ -15,6 +15,7 @@ class LoginModel extends CustomModel {
   // State field(s) for TextField widget.
   late TextEditingController passwordTextController;
   late String? Function(String?) passwordTextControllerValidator;
+  final formKey = GlobalKey<FormState>();
 
   /// Initialization and disposal methods.
   ///

@@ -1,5 +1,5 @@
 import 'package:LuxCal/navigation/navigation_logic.dart';
-import 'package:LuxCal/pages/add_news/add_news_view.dart';
+import 'package:LuxCal/pages/add_news/add_news_page.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 
 import 'package:flutter/material.dart';

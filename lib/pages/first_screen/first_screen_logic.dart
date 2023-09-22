@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:LuxCal/pages/login/login_view.dart';
+import 'package:LuxCal/pages/login/login_page.dart';
 
 import '../../widgets/route/route_widget.dart';
 

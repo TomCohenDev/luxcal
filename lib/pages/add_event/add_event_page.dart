@@ -84,13 +84,11 @@ class _AddEventWidgetState extends State<AddEventWidget> {
     _model.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Form(
-        key: _model.form,
+        key: _model.formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -281,7 +279,9 @@ class _AddEventWidgetState extends State<AddEventWidget> {
               child: Text("Pick Image"),
             ),
             CustomMainButton(
-              onPressed: _createEvent,
+              onPressed: () {
+                createEvent(_model, widget.onEventAdd);
+              },
               buttonText: "Add Event",
             ),
           ],
@@ -290,56 +290,12 @@ class _AddEventWidgetState extends State<AddEventWidget> {
     );
   }
 
-  void _createEvent() async {
-                    if (!isFormValidated(formKey)) return;
-
-    if (!(_model.form.currentState?.validate() ?? true)) return;
-
-    _model.form.currentState?.save();
-
-    final event = CalendarEventData<Event>(
-      date: _model.startDate,
-      color: _model.color,
-      endTime: _model.endTime,
-      startTime: _model.startTime,
-      description: _model.description,
-      endDate: _model.endDate,
-      title: _model.title,
-      event: Event(
-        title: _model.title,
-      ),
-    );
-
-    widget.onEventAdd?.call(event);
-
-    // CalendarControllerProvider.of(context).controller.add(event);
-
-    Map<String, dynamic> eventData = createEventRecordData(
-        title: event.title,
-        startdate: event.date,
-        color: Utils().getColorString(event.color.toString()),
-        created_date: DateTime.now(),
-        enddate: event.endDate,
-        endtime: event.endTime,
-        starttime: event.startTime,
-        description: event.description,
-        event_creator: currentUserDocument!.uid);
-
-    // Step 2: Add the map to the Firestore collection and return the reference
-    DocumentReference eventRef = await EventRecord.collection.add(eventData);
-
-    if (_model.selectedImage != null) {
-      _model.imageUrl =
-          await uploadImageToFirebase(_model.selectedImage!, eventRef.id);
-    }
-    eventRef.update({"imageUrl": _model.imageUrl});
-
-    _resetForm();
+  Widget imagePreview(File? selectedImage) {
+  if (selectedImage == null) {
+    return Text("No image selected.");
   }
-
-  void _resetForm() {
-    _model.form.currentState?.reset();
-  }
+  return Image.file(selectedImage);
+}
 
   void _displayColorPicker() {
     var color = _model.color;

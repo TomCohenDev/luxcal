@@ -5,10 +5,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:LuxCal/utils/utils.dart';
-import 'package:LuxCal/pages/first_screen/first_screen_view.dart';
+import 'package:LuxCal/pages/first_screen/first_screen_page.dart';
 import 'package:LuxCal/pages/home/home_view.dart';
-import 'package:LuxCal/pages/login/login_view.dart';
-import 'package:LuxCal/pages/nickname/nickname_view.dart';
+import 'package:LuxCal/pages/login/login_page.dart';
+import 'package:LuxCal/pages/nickname/nickname_page.dart';
 
 import 'backend/auth/auth_util.dart';
 import 'backend/auth/firebase_user_provider.dart';

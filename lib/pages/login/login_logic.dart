@@ -1,11 +1,12 @@
 import 'package:LuxCal/pages/home/home_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:LuxCal/pages/login/login_view.dart';
+import 'package:LuxCal/pages/login/login_page.dart';
 
 import '../../utils/utils.dart';
-import '../register/register_view.dart';
+import '../register/register_page.dart';
 import '../../widgets/route/route_widget.dart';
+import 'login_model.dart';
 
 void navigateToRegisterWidget(context) {
   Navigator.push(
@@ -26,17 +27,13 @@ void navigateToHomeWidget(context) {
   );
 }
 
-bool isFormValidated(formKey) {
-  final isValid = formKey.currentState!.validate();
-  if (!isValid) return false;
-  return true;
-}
+Future<void> signIn(context, LoginModel _model) async {
+  if (!Utils.isFormValidated(_model.formKey)) return;
 
-Future<void> signIn(context, String email, String password) async {
   try {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
+      email: _model.emailTextController.text.trim(),
+      password: _model.passwordTextController.text.trim(),
     );
   } on FirebaseAuthException catch (e) {
     print(e.code);
