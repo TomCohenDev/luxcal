@@ -1,8 +1,10 @@
+import 'package:LuxCal/backend/records/news_record.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:LuxCal/backend/records/user_record.dart';
 import '../../utils/latlng.dart';
+import 'event_record.dart';
 import 'user_record.dart';
 import 'package:built_collection/src/list.dart';
 part 'serializers.g.dart';
@@ -12,6 +14,8 @@ const kDocumentReferenceField = 'Document__Reference__Field';
 @SerializersFor(
   const [
     UserRecord,
+    EventRecord,
+    NewsRecord,
   ],
 )
 final Serializers serializers = (_$serializers.toBuilder()

@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.0.15
   # http: ^1.0.0
   image: ^4.0.17
+  
 
 
   # Firebase plugins
@@ -64,6 +65,11 @@ dependencies:
   connectivity_plus: ^4.0.2
   animated_bottom_navigation_bar: ^1.2.1
   flutter_speed_dial: ^7.0.0
+  http: ^1.1.0
+  table_calendar: ^3.0.9
+  calendar_view: ^1.0.4
+  intl: ^0.18.0
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:

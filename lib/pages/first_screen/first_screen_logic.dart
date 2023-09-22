@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:LuxCal/widgets/login/login_view.dart';
+import 'package:LuxCal/pages/login/login_view.dart';
 
-import '../route/route_widget.dart';
+import '../../widgets/route/route_widget.dart';
 
 void navigateToLoginWidget(context) {
   Navigator.pushAndRemoveUntil(

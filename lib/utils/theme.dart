@@ -1,80 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-abstract class AppTheme {
-  static final AppTheme lightMode = LightModeTheme._();
+class AppColors {
+  // static final AppTheme colors = ColorPalette._();
+  AppColors._();
 
-  Color get bannerColor;
-  Color get bannerTextTitleColor;
-  Color get bannerLightColor;
-  Color get cardColor;
-  Color get cardTextColor;
-  Color get cardTitleTextColor;
-  Color get backgroundColor;
-  Color get buttonColor;
-  Color get buttonTextColor;
-  Color get textFieldHintTextColor;
-  Color get textFieldTextColor;
+  static const Color bannerColor = Color(0xFF795ad9);
+  static const Color bannerLightColor = Color(0xFF7f60df);
+  static const Color bannerTextTitleColor = Colors.white;
+  static const Color cardColor = Colors.white;
+  static const Color backgroundColor = Color(0xFFf7f7f7);
+  static const Color buttonColor = Color(0xFF7d54cd);
+  static const Color buttonTextColor = Colors.white;
+  static const Color textFieldHintTextColor = Color(0xFF646464);
+  static const Color textFieldTextColor = Color(0xFF646464);
+  static const Color cardTextColor = Color(0xFF646464);
+  static const Color cardTitleTextColor = Color(0xFF646464);
 }
 
-class LightModeTheme implements AppTheme {
-  LightModeTheme._();
-
-  @override
-  Color get bannerColor => const Color(0xFF795ad9);
-  @override
-  Color get bannerLightColor => const Color(0xFF7f60df);
-  @override
-  Color get bannerTextTitleColor => Colors.white;
-  @override
-  Color get cardColor => Colors.white;
-  @override
-  Color get backgroundColor => const Color(0xFFf7f7f7);
-  @override
-  Color get buttonColor => const Color(0xFF7d54cd);
-  @override
-  Color get buttonTextColor => Colors.white;
-  @override
-  Color get textFieldHintTextColor => const Color(0xFF646464);
-  @override
-  Color get textFieldTextColor => const Color(0xFF646464);
-  @override
-  Color get cardTextColor => const Color(0xFF646464);
-  @override
-  Color get cardTitleTextColor => const Color(0xFF646464);
-}
-
-class AppThemeTypography {
+class AppTypography {
   static const _defaultFontFamily = 'Open Sans';
   static const _appNameFont = 'Orbitron';
 
-  final AppTheme theme;
+  AppTypography._();
 
-  AppThemeTypography(this.theme);
+  // AppTypography(this.theme);
 
-  TextStyle get bannerTitle => GoogleFonts.getFont(
+  static TextStyle get bannerTitle => GoogleFonts.getFont(
         _defaultFontFamily,
-        color: theme.bannerTextTitleColor,
+        color: AppColors.bannerTextTitleColor,
         fontWeight: FontWeight.w600,
         fontSize: 22.0,
       );
 
-  TextStyle get textfieldText => GoogleFonts.getFont(
+  static TextStyle get textfieldText => GoogleFonts.getFont(
         _defaultFontFamily,
         color: const Color(0xFF646464),
         fontWeight: FontWeight.w600,
         fontSize: 22.0,
       );
-  TextStyle get textfieldHintText => GoogleFonts.getFont(
+  static TextStyle get textfieldHintText => GoogleFonts.getFont(
         _defaultFontFamily,
         color: const Color(0xFF646464),
         fontWeight: FontWeight.w600,
         fontSize: 22.0,
       );
 
-  TextStyle get buttonText => GoogleFonts.getFont(
+  static TextStyle get buttonText => GoogleFonts.getFont(
         _defaultFontFamily,
-        color: theme.buttonTextColor,
+        color: AppColors.buttonTextColor,
         fontWeight: FontWeight.w600,
         fontSize: 22.0,
       );

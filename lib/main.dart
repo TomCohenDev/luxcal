@@ -1,13 +1,14 @@
 import 'package:LuxCal/navigation/navigation.dart';
+import 'package:calendar_view/calendar_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:LuxCal/utils/utils.dart';
-import 'package:LuxCal/widgets/first_screen/first_screen_view.dart';
-import 'package:LuxCal/widgets/home/home_view.dart';
-import 'package:LuxCal/widgets/login/login_view.dart';
-import 'package:LuxCal/widgets/nickname/nickname_view.dart';
+import 'package:LuxCal/pages/first_screen/first_screen_view.dart';
+import 'package:LuxCal/pages/home/home_view.dart';
+import 'package:LuxCal/pages/login/login_view.dart';
+import 'package:LuxCal/pages/nickname/nickname_view.dart';
 
 import 'backend/auth/auth_util.dart';
 import 'backend/auth/firebase_user_provider.dart';
@@ -46,14 +47,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: Utils.messengerKey,
-      home: !storage.read('display_first_screen')
-          ? (currentUser != null && currentUser!.loggedIn)
-              ? NavigationWidget()
-              : LoginWidget()
-          : FirstScreenWidget(),
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: Utils.messengerKey,
+        home: !storage.read('display_first_screen')
+            ? (currentUser != null && currentUser!.loggedIn)
+                ? NavigationWidget()
+                : LoginWidget()
+            : FirstScreenWidget(),
+      ),
     );
   }
 }

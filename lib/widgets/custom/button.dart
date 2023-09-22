@@ -16,8 +16,7 @@ class CustomMainButton extends StatelessWidget {
     this.buttonTextColor = Colors.white,
     this.active = true,
     required this.buttonText,
-  })  : theme = AppTheme.lightMode,
-        typography = AppThemeTypography(AppTheme.lightMode);
+  });
 
   double? width;
   double? height;
@@ -26,8 +25,6 @@ class CustomMainButton extends StatelessWidget {
   Color buttonColor;
   Color buttonTextColor;
 
-  final AppTheme theme;
-  final AppThemeTypography typography;
   bool active;
   // final Future<dynamic> Function()? onPressed;
   final Function()? onPressed;
@@ -53,7 +50,7 @@ class CustomMainButton extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             buttonText,
-            style: typography.buttonText.copyWith(color: buttonTextColor),
+            style: AppTypography.buttonText.copyWith(color: buttonTextColor),
           ),
         ),
       ),

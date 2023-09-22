@@ -11,8 +11,7 @@ class BannerWidget extends StatelessWidget {
   final double height;
   final bool showBackButton;
 
-  final AppTheme theme;
-  final AppThemeTypography typography;
+
 
   BannerWidget({
     required this.title,
@@ -20,8 +19,7 @@ class BannerWidget extends StatelessWidget {
     required this.ringColor,
     required this.height,
     this.showBackButton = false,
-  })  : theme = AppTheme.lightMode,
-        typography = AppThemeTypography(AppTheme.lightMode);
+  }) ;
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +42,18 @@ class BannerWidget extends StatelessWidget {
                 Align(
                   alignment: Alignment(1, 1),
                   child: CustomPaint(
-                    painter: RingPainter(25, 60, theme.bannerLightColor),
+                    painter: RingPainter(25, 60, AppColors.bannerLightColor),
                   ),
                 ),
                 Align(
                   alignment: Alignment(-1, -1),
                   child: CustomPaint(
-                    painter: RingPainter(25, 60, theme.bannerLightColor),
+                    painter: RingPainter(25, 60, AppColors.bannerLightColor),
                   ),
                 ),
                 Align(
                     alignment: Alignment(0, 0.15),
-                    child: Text(title, style: typography.bannerTitle)),
+                    child: Text(title, style: AppTypography.bannerTitle)),
                 showBackButton
                     ? Align(
                         alignment: Alignment(-0.95, -0.2),
@@ -83,7 +81,7 @@ class BannerWidget extends StatelessWidget {
             child: Container(
                 height: ScreenInfo(context).screenHeight - height,
                 width: ScreenInfo(context).screenWidth,
-                color: theme.backgroundColor),
+                color: AppColors.backgroundColor),
           )
         ],
       ),

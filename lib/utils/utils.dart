@@ -22,4 +22,16 @@ class Utils {
       ..removeCurrentSnackBar()
       ..showSnackBar(snackBar);
   }
+
+
+  String getColorString(String uncutString) {
+  RegExp regExp = RegExp(r'Color\((0xff[0-9a-fA-F]{6})\)');
+  Match? match = regExp.firstMatch(uncutString);
+
+  if (match != null && match.groupCount > 0) {
+    return match.group(1)!;
+  } else {
+    return '';
+  }
+}
 }

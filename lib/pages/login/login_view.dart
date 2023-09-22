@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:LuxCal/utils/theme.dart';
 import 'package:LuxCal/widgets/custom/model.dart';
-import 'package:LuxCal/widgets/login/login_model.dart';
+import 'package:LuxCal/pages/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
-import '../custom/banner.dart';
-import '../custom/button.dart';
-import '../custom/quarter_circle.dart';
-import '../custom/ring.dart';
-import '../custom/textfield.dart';
+import '../../widgets/custom/banner.dart';
+import '../../widgets/custom/button.dart';
+import '../../widgets/custom/quarter_circle.dart';
+import '../../widgets/custom/ring.dart';
+import '../../widgets/custom/textfield.dart';
 import 'login_logic.dart';
 
 class LoginWidget extends StatefulWidget {
-  final AppTheme theme;
-  final AppThemeTypography typography;
-  LoginWidget({super.key})
-      : theme = AppTheme.lightMode,
-        typography = AppThemeTypography(AppTheme.lightMode);
+  LoginWidget({super.key});
 
   @override
   State<LoginWidget> createState() => _LoginWidgetState();
@@ -50,8 +46,8 @@ class _LoginWidgetState extends State<LoginWidget> {
         child: Stack(children: [
           BannerWidget(
             title: "LuxCal",
-            backGroundColor: widget.theme.bannerColor,
-            ringColor: widget.theme.bannerLightColor,
+            backGroundColor: AppColors.bannerColor,
+            ringColor: AppColors.bannerLightColor,
             height: ScreenInfo(context).screenHeight * 0.15,
           ),
           Padding(
@@ -83,15 +79,15 @@ class _LoginWidgetState extends State<LoginWidget> {
               obscureText: false,
               decoration: InputDecoration(
                 labelText: 'Email',
-                labelStyle: widget.typography.textfieldHintText,
+                labelStyle: AppTypography.textfieldHintText,
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20.0),
                   borderSide: BorderSide.none,
                 ),
-                fillColor: widget.theme.cardColor,
+                fillColor: AppColors.cardColor,
               ),
-              style: widget.typography.textfieldText,
+              style: AppTypography.textfieldText,
               keyboardType: TextInputType.emailAddress,
             ),
             validator: _model.emailTextControllerValidator,
@@ -105,15 +101,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: widget.typography.textfieldHintText,
+                  labelStyle: AppTypography.textfieldHintText,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: widget.theme.cardColor,
+                  fillColor: AppColors.cardColor,
                 ),
-                style: widget.typography.textfieldText,
+                style: AppTypography.textfieldText,
                 keyboardType: TextInputType.emailAddress,
               ),
             ),
@@ -142,7 +138,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 },
                 child: Text(
                   "New here? click here to register",
-                  style: widget.typography.textfieldText.copyWith(fontSize: 16),
+                  style: AppTypography.textfieldText.copyWith(fontSize: 16),
                 )),
           ),
           Flexible(child: Container()),

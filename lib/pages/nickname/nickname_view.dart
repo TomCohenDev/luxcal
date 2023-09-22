@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:LuxCal/utils/theme.dart';
 import 'package:LuxCal/widgets/custom/model.dart';
-import 'package:LuxCal/widgets/login/login_model.dart';
+import 'package:LuxCal/pages/login/login_model.dart';
 
 import '../../utils/screen_sizes.dart';
 import '../../utils/utils.dart';
-import '../custom/banner.dart';
-import '../custom/button.dart';
-import '../custom/quarter_circle.dart';
-import '../custom/ring.dart';
-import '../custom/textfield.dart';
+import '../../widgets/custom/banner.dart';
+import '../../widgets/custom/button.dart';
+import '../../widgets/custom/quarter_circle.dart';
+import '../../widgets/custom/ring.dart';
+import '../../widgets/custom/textfield.dart';
 import 'nickname_model.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import 'nickname_logic.dart';
 
 class NicknameWidget extends StatefulWidget {
-  final AppTheme theme;
-  final AppThemeTypography typography;
-  NicknameWidget({super.key})
-      : theme = AppTheme.lightMode,
-        typography = AppThemeTypography(AppTheme.lightMode);
+  NicknameWidget({super.key});
 
   @override
   State<NicknameWidget> createState() => _NicknameWidgetState();
@@ -33,7 +29,7 @@ class _NicknameWidgetState extends State<NicknameWidget> {
   void changeColor(Color color) {
     setState(() {
       _model.currentColor = color;
-      _model.currentColorText = getColorString(color.toString());
+      _model.currentColorText = Utils().getColorString(color.toString());
     });
     Navigator.pop(context);
   }
@@ -63,8 +59,8 @@ class _NicknameWidgetState extends State<NicknameWidget> {
           child: Stack(children: [
             BannerWidget(
               title: "LuxCal",
-              backGroundColor: widget.theme.bannerColor,
-              ringColor: widget.theme.bannerLightColor,
+              backGroundColor: AppColors.bannerColor,
+              ringColor: AppColors.bannerLightColor,
               height: ScreenInfo(context).screenHeight * 0.15,
             ),
             Padding(
@@ -98,7 +94,7 @@ class _NicknameWidgetState extends State<NicknameWidget> {
                 },
                 child: Text(
                   "Choose a friendly nickname and a color to distinguish yourself :)",
-                  style: widget.typography.textfieldText,
+                  style: AppTypography.textfieldText,
                   textAlign: TextAlign.center,
                 )),
           ),
@@ -111,17 +107,17 @@ class _NicknameWidgetState extends State<NicknameWidget> {
                 obscureText: false,
                 decoration: InputDecoration(
                   labelText: 'Nickname',
-                  labelStyle: widget.typography.textfieldHintText,
+                  labelStyle: AppTypography.textfieldHintText,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: widget.theme.cardColor,
+                  fillColor: AppColors.cardColor,
                 ),
-                style: widget.typography.textfieldText.copyWith(
+                style: AppTypography.textfieldText.copyWith(
                     color: _model.currentColor ??
-                        widget.typography.textfieldHintText.color),
+                        AppTypography.textfieldHintText.color),
                 keyboardType: TextInputType.emailAddress,
               ),
             ),
@@ -141,15 +137,15 @@ class _NicknameWidgetState extends State<NicknameWidget> {
                     // obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Color',
-                      labelStyle: widget.typography.textfieldHintText,
+                      labelStyle: AppTypography.textfieldHintText,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                         borderSide: BorderSide.none,
                       ),
-                      fillColor: _model.currentColor ?? widget.theme.cardColor,
+                      fillColor: _model.currentColor ?? AppColors.cardColor,
                     ),
-                    style: widget.typography.textfieldText,
+                    style: AppTypography.textfieldText,
                     keyboardType: TextInputType.emailAddress,
                   ),
                 ),

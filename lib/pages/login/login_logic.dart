@@ -1,11 +1,11 @@
-import 'package:LuxCal/widgets/home/home_view.dart';
+import 'package:LuxCal/pages/home/home_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:LuxCal/widgets/login/login_view.dart';
+import 'package:LuxCal/pages/login/login_view.dart';
 
 import '../../utils/utils.dart';
 import '../register/register_view.dart';
-import '../route/route_widget.dart';
+import '../../widgets/route/route_widget.dart';
 
 void navigateToRegisterWidget(context) {
   Navigator.push(
