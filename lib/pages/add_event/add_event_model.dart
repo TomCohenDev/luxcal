@@ -15,7 +15,7 @@ class AddEventModel extends CustomModel {
   DateTime? endTime;
   String title = "";
   String description = "";
-  Color color = Colors.blue;
+  Color color = Colors.green;
   late FocusNode titleNode;
   late FocusNode descriptionNode;
   late FocusNode dateNode;

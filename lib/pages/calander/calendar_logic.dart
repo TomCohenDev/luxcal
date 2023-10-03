@@ -48,12 +48,14 @@ List<CalendarEventData<Event>> convertFirestoreEventsToCalendar(
   }).toList();
 }
 
-List<CalendarEventData<Event>> generateEvents(List<EventItem> items) {
+List<CalendarEventData<Event>> generateEventsFromHolidays(
+    List<EventItem> items) {
   return items.map((item) {
     final DateTime eventDate = DateTime.parse(item.date);
     return CalendarEventData<Event>(
       date: eventDate,
       title: item.title,
+      startTime: eventDate,
       event: Event(
         title: item.title,
       ),

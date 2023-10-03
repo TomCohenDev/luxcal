@@ -12,6 +12,7 @@ import 'package:LuxCal/pages/nickname/nickname_page.dart';
 
 import 'backend/auth/auth_util.dart';
 import 'backend/auth/firebase_user_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class _MyAppState extends State<MyApp> {
   late Stream<LoginFirebaseUser> userStream;
   LoginFirebaseUser? initialUser;
   final authUserSub = authenticatedUserStream.listen((_) {});
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   // This widget is the root of your application.
 
@@ -43,6 +45,10 @@ class _MyAppState extends State<MyApp> {
     userStream = loginFirebaseUserStream()
       ..listen((user) => initialUser ?? setState(() => initialUser = user));
     storage.writeIfNull('display_first_screen', true);
+    _firebaseMessaging.subscribeToTopic('events');
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // Handle the incoming message, e.g., by showing a notification
+    });
   }
 
   @override

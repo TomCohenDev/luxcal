@@ -291,11 +291,11 @@ class _AddEventWidgetState extends State<AddEventWidget> {
   }
 
   Widget imagePreview(File? selectedImage) {
-  if (selectedImage == null) {
-    return Text("No image selected.");
+    if (selectedImage == null) {
+      return Text("No image selected.");
+    }
+    return Image.file(selectedImage);
   }
-  return Image.file(selectedImage);
-}
 
   void _displayColorPicker() {
     var color = _model.color;
@@ -342,7 +342,7 @@ class _AddEventWidgetState extends State<AddEventWidget> {
                 onPressed: () {
                   if (mounted)
                     setState(() {
-                      color = color;
+                      _model.color = color;
                     });
                   Navigator.pop(context);
                 },

@@ -12,6 +12,16 @@ import '../../backend/records/serializers.dart';
 import 'calendar_logic.dart';
 import 'calendar_model.dart';
 
+  extension SafeAdd on List<CalendarEventData> {
+  void safeAddEvent(CalendarEventData event) {
+    if (event.startTime == null) {
+      print('Event with null startTime detected: $event');
+      return;
+    }
+    this.addEventInSortedManner(event);
+  }
+}
+
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget({super.key});
 
@@ -29,26 +39,44 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     getAllEvents();
   }
 
-  getAllEvents() {
-    // Fetch holidays
-    fetchHolidays(_model.focusedDay.year).then((items) {
-      setState(() {
-        _model.events = generateEvents(items);
-        for (var event in _model.events) {
-          CalendarControllerProvider.of(context).controller.add(event);
-        }
-      });
-    });
 
-    // Fetch Firestore events
-    fetchEventsFromFirestore().then((firestoreEvents) {
-      final calendarEvents = convertFirestoreEventsToCalendar(firestoreEvents);
-      setState(() {
-        _model.events.addAll(calendarEvents);
-        for (var event in calendarEvents) {
-          CalendarControllerProvider.of(context).controller.add(event);
-        }
-      });
+
+  getAllEvents() async {
+    final holidays = await fetchHolidays(_model.focusedDay.year);
+    setState(() {
+      _model.events = generateEventsFromHolidays(holidays);
+    });
+    final firestoreEvents = await fetchEventsFromFirestore();
+    final calendarEvents = convertFirestoreEventsToCalendar(firestoreEvents);
+    setState(() {
+      _model.events.addAll(calendarEvents);
+      CalendarControllerProvider.of(context).controller.addAll(_model.events);
+    });
+  }
+
+  Future<void> addHolidaysToController() async {
+    final holidays = await fetchHolidays(_model.focusedDay.year);
+    setState(() {
+      _model.events = generateEventsFromHolidays(holidays);
+      // for (var event in _model.events) {
+      //   print(event.title);
+      //   // CalendarControllerProvider.of(context).controller.add(event);
+      // }
+    });
+  }
+
+  Future<void> addEventsToController() async {
+    final firestoreEvents = await fetchEventsFromFirestore();
+    final calendarEvents = convertFirestoreEventsToCalendar(firestoreEvents);
+    setState(() {
+      _model.events.addAll(calendarEvents);
+      CalendarControllerProvider.of(context).controller.addAll(_model.events);
+
+      // for (var event in _model.events) {
+      //   print(event.title);
+
+      //   // CalendarControllerProvider.of(context).controller. add(event);
+      // }
     });
   }
 
@@ -65,7 +93,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
             _model.previewsYear = date.year;
             fetchHolidays(date.year).then((items) {
               setState(() {
-                _model.events = generateEvents(items);
+                _model.events = generateEventsFromHolidays(items);
                 // Add the events to the CalendarController
                 for (var event in _model.events) {
                   CalendarControllerProvider.of(context).controller.add(event);
