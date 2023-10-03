@@ -12,7 +12,26 @@ import '../../backend/records/event_record.dart';
 import '../../utils/utils.dart';
 import 'event.dart';
 
+TimeOfDay addHours(TimeOfDay time, int hoursToAdd) {
+  int newHour = time.hour + hoursToAdd;
+  if (newHour >= 24) newHour -= 24;
+  return TimeOfDay(hour: newHour, minute: time.minute);
+}
 
+Future<TimeOfDay> selectTime(BuildContext context) async {
+  print("Entering _selectTime"); // Debug print
+  final TimeOfDay? pickedTime = await showTimePicker(
+    context: context,
+    initialTime: addHours(TimeOfDay.now(), 3),
+  );
+
+  if (pickedTime != null) {
+    return pickedTime;
+    // Handle the time picked here.
+  } else {
+    return TimeOfDay(hour: 0, minute: 0);
+  }
+}
 
 Future<File?> pickImage() async {
   final picker = ImagePicker();
@@ -39,11 +58,11 @@ createEvent(AddEventModel _model, onAddEvet) async {
 
   final event = CalendarEventData<Event>(
     date: _model.startDate,
+    startTime: _model.startDate,
     color: _model.color,
-    endTime: _model.endTime,
-    startTime: _model.startTime,
     description: _model.description,
     endDate: _model.endDate,
+    endTime: _model.endDate,
     title: _model.title,
     event: Event(
       title: _model.title,
@@ -57,11 +76,11 @@ createEvent(AddEventModel _model, onAddEvet) async {
   Map<String, dynamic> eventData = createEventRecordData(
       title: event.title,
       startdate: event.date,
+      // starttime: event.date,
       color: Utils.getColorString(event.color.toString()),
       created_date: DateTime.now(),
       enddate: event.endDate,
-      endtime: event.endTime,
-      starttime: event.startTime,
+      // endtime: event.endDate,
       description: event.description,
       event_creator: currentUserDocument!.uid);
 

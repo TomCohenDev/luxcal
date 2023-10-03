@@ -11,8 +11,8 @@ import 'package:email_validator/email_validator.dart';
 class AddEventModel extends CustomModel {
   late DateTime startDate;
   late DateTime endDate;
-  DateTime? startTime;
-  DateTime? endTime;
+  // TimeOfDay? startTime;
+  // DateTime? endTime;
   String title = "";
   String description = "";
   Color color = Colors.green;

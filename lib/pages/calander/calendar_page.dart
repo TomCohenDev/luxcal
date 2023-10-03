@@ -12,16 +12,6 @@ import '../../backend/records/serializers.dart';
 import 'calendar_logic.dart';
 import 'calendar_model.dart';
 
-  extension SafeAdd on List<CalendarEventData> {
-  void safeAddEvent(CalendarEventData event) {
-    if (event.startTime == null) {
-      print('Event with null startTime detected: $event');
-      return;
-    }
-    this.addEventInSortedManner(event);
-  }
-}
-
 class CalendarWidget extends StatefulWidget {
   const CalendarWidget({super.key});
 
@@ -39,44 +29,36 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     getAllEvents();
   }
 
-
-
   getAllEvents() async {
     final holidays = await fetchHolidays(_model.focusedDay.year);
+
+    final firestoreEvents = await fetchEventsFromFirestore();
+    List<CalendarEventData<Event>> calendarEvents =
+        convertFirestoreEventsToCalendar(firestoreEvents);
+
     setState(() {
       _model.events = generateEventsFromHolidays(holidays);
-    });
-    final firestoreEvents = await fetchEventsFromFirestore();
-    final calendarEvents = convertFirestoreEventsToCalendar(firestoreEvents);
-    setState(() {
+
+      calendarEvents = calendarEvents.map((event) {
+        print(event.date);
+        DateTime normalizedDate =
+            DateTime(event.date.year, event.date.month, event.date.day, 0, 0);
+
+        return CalendarEventData<Event>(
+          date: normalizedDate,
+          title: event.title,
+          color: event.color,
+          description: event.description,
+          endDate: event.endDate,
+          endTime: event.endDate,
+          event: event.event,
+          startTime: normalizedDate,
+        );
+      }).toList();
+
       _model.events.addAll(calendarEvents);
+
       CalendarControllerProvider.of(context).controller.addAll(_model.events);
-    });
-  }
-
-  Future<void> addHolidaysToController() async {
-    final holidays = await fetchHolidays(_model.focusedDay.year);
-    setState(() {
-      _model.events = generateEventsFromHolidays(holidays);
-      // for (var event in _model.events) {
-      //   print(event.title);
-      //   // CalendarControllerProvider.of(context).controller.add(event);
-      // }
-    });
-  }
-
-  Future<void> addEventsToController() async {
-    final firestoreEvents = await fetchEventsFromFirestore();
-    final calendarEvents = convertFirestoreEventsToCalendar(firestoreEvents);
-    setState(() {
-      _model.events.addAll(calendarEvents);
-      CalendarControllerProvider.of(context).controller.addAll(_model.events);
-
-      // for (var event in _model.events) {
-      //   print(event.title);
-
-      //   // CalendarControllerProvider.of(context).controller. add(event);
-      // }
     });
   }
 
@@ -103,7 +85,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
           }
         },
         onEventTap: (event, date) {
-          print(event);
+          print(event.startTime);
         },
       ),
     );

@@ -113,13 +113,14 @@ class _AddEventWidgetState extends State<AddEventWidget> {
             SizedBox(
               height: 15,
             ),
+            SizedBox(width: 20.0),
             Row(
               children: [
                 Expanded(
                   child: DateTimeSelectorFormField(
                     controller: _model.startDateController,
                     decoration: AppConstants.inputDecoration.copyWith(
-                      labelText: "Start Date",
+                      labelText: "Start Time",
                     ),
                     validator: (value) {
                       if (value == null || value == "")
@@ -131,7 +132,15 @@ class _AddEventWidgetState extends State<AddEventWidget> {
                       color: AppColors.black,
                       fontSize: 17.0,
                     ),
-                    onSave: (date) => _model.startDate = date,
+                    onSelect: (date) async {
+                      if (date != null) {
+                        // _model.startDate = date;
+                        final startTime = await selectTime(context);
+                        _model.startDate = DateTime(date.year, date.month,
+                            date.day, startTime.hour, startTime.minute);
+                        print(_model.startDate);
+                      }
+                    },
                     type: DateTimeSelectionType.date,
                   ),
                 ),
@@ -140,7 +149,7 @@ class _AddEventWidgetState extends State<AddEventWidget> {
                   child: DateTimeSelectorFormField(
                     controller: _model.endDateController,
                     decoration: AppConstants.inputDecoration.copyWith(
-                      labelText: "End Date",
+                      labelText: "End Time",
                     ),
                     validator: (value) {
                       if (value == null || value == "")
@@ -164,7 +173,15 @@ class _AddEventWidgetState extends State<AddEventWidget> {
                       color: AppColors.black,
                       fontSize: 17.0,
                     ),
-                    onSave: (date) => _model.endDate = date,
+                    // onSave: (date) => _model.endDate = date,
+                    onSelect: (date) async {
+                      if (date != null) {
+                        // _model.endDate = date;
+                        final endTime = await selectTime(context);
+                        _model.endDate = DateTime(date.year, date.month,
+                            date.day, endTime.hour, endTime.minute);
+                      }
+                    },
                     type: DateTimeSelectionType.date,
                   ),
                 ),
@@ -173,51 +190,51 @@ class _AddEventWidgetState extends State<AddEventWidget> {
             SizedBox(
               height: 15,
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: DateTimeSelectorFormField(
-                    controller: _model.startTimeController,
-                    decoration: AppConstants.inputDecoration.copyWith(
-                      labelText: "Start Time",
-                    ),
-                    validator: (value) {
-                      if (value == null || value == "")
-                        return "Please select start time.";
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: DateTimeSelectorFormField(
+            //         controller: _model.startTimeController,
+            //         decoration: AppConstants.inputDecoration.copyWith(
+            //           labelText: "Start Time",
+            //         ),
+            //         validator: (value) {
+            //           if (value == null || value == "")
+            //             return "Please select start time.";
 
-                      return null;
-                    },
-                    onSave: (date) => _model.startTime = date,
-                    textStyle: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 17.0,
-                    ),
-                    type: DateTimeSelectionType.time,
-                  ),
-                ),
-                SizedBox(width: 20.0),
-                Expanded(
-                  child: DateTimeSelectorFormField(
-                    controller: _model.endTimeController,
-                    decoration: AppConstants.inputDecoration.copyWith(
-                      labelText: "End Time",
-                    ),
-                    validator: (value) {
-                      if (value == null || value == "")
-                        return "Please select end time.";
+            //           return null;
+            //         },
+            //         onSave: (date) => _model.startTime = date,
+            //         textStyle: TextStyle(
+            //           color: AppColors.black,
+            //           fontSize: 17.0,
+            //         ),
+            //         type: DateTimeSelectionType.time,
+            //       ),
+            //     ),
+            //     SizedBox(width: 20.0),
+            //     Expanded(
+            //       child: DateTimeSelectorFormField(
+            //         controller: _model.endTimeController,
+            //         decoration: AppConstants.inputDecoration.copyWith(
+            //           labelText: "End Time",
+            //         ),
+            //         validator: (value) {
+            //           if (value == null || value == "")
+            //             return "Please select end time.";
 
-                      return null;
-                    },
-                    onSave: (date) => _model.endTime = date,
-                    textStyle: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 17.0,
-                    ),
-                    type: DateTimeSelectionType.time,
-                  ),
-                ),
-              ],
-            ),
+            //           return null;
+            //         },
+            //         onSave: (date) => _model.endTime = date,
+            //         textStyle: TextStyle(
+            //           color: AppColors.black,
+            //           fontSize: 17.0,
+            //         ),
+            //         type: DateTimeSelectionType.time,
+            //       ),
+            //     ),
+            //   ],
+            // ),
             SizedBox(
               height: 15,
             ),

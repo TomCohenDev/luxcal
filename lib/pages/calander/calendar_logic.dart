@@ -37,8 +37,8 @@ List<CalendarEventData<Event>> convertFirestoreEventsToCalendar(
       endDate: record.enddate,
       color: Color(int.parse(record.color!)),
       description: record.description!,
-      endTime: record.endtime,
-      startTime: record.starttime,
+      // endTime: record.endtime,
+      startTime: record.startdate,
       title: record.title!,
       event: Event(
         title: record.title!,
