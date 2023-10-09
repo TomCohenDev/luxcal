@@ -14,9 +14,10 @@ class CalendarModel extends CustomModel {
   DateTime selectedDay = DateTime.now();
   int previewsYear = DateTime.now().year;
   List<CalendarEventData<Event>> events = [];
+  // late EventController<Object?> calendarProvider;
 
   void initState(BuildContext context) {
-    
+    // calendarProvider = CalendarControllerProvider.of(context).controller;
   }
 
   void dispose() {}

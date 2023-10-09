@@ -51,37 +51,38 @@ Future<String> uploadImageToFirebase(File imageFile, String eventID) async {
   return downloadUrl;
 }
 
-createEvent(AddEventModel _model, onAddEvet) async {
+createEvent(context, AddEventModel _model, onAddEvet) async {
   if (!Utils.isFormValidated(_model.formKey)) return;
 
   _model.formKey.currentState?.save();
 
-  final event = CalendarEventData<Event>(
-    date: _model.startDate,
-    startTime: _model.startDate,
-    color: _model.color,
-    description: _model.description,
-    endDate: _model.endDate,
-    endTime: _model.endDate,
-    title: _model.title,
-    event: Event(
-      title: _model.title,
-    ),
-  );
+  // final event = CalendarEventData<Event>(
+  //   date: _model.startDate,
+  //   startTime: _model.startDate,
+  //   color: _model.color,
+  //   description: _model.description,
+  //   endDate: _model.endDate,
+  //   endTime: _model.endDate,
+  //   title: _model.title,
+  //   event: Event(
+  //     title: _model.title,
+  //   ),
+  // );
 
-  onAddEvet?.call(event);
+  // onAddEvet?.call();
+  Navigator.pop(context);
 
   // CalendarControllerProvider.of(context).controller.add(event);
 
   Map<String, dynamic> eventData = createEventRecordData(
-      title: event.title,
-      startdate: event.date,
+      title: _model.title,
+      startdate: _model.startDate,
       // starttime: event.date,
-      color: Utils.getColorString(event.color.toString()),
+      color: Utils.getColorString(_model.color.toString()),
       created_date: DateTime.now(),
-      enddate: event.endDate,
+      enddate: _model.endDate,
       // endtime: event.endDate,
-      description: event.description,
+      description: _model.description,
       event_creator: currentUserDocument!.uid);
 
   DocumentReference eventRef = await EventRecord.collection.add(eventData);

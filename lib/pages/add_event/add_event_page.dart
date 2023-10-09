@@ -190,51 +190,6 @@ class _AddEventWidgetState extends State<AddEventWidget> {
             SizedBox(
               height: 15,
             ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: DateTimeSelectorFormField(
-            //         controller: _model.startTimeController,
-            //         decoration: AppConstants.inputDecoration.copyWith(
-            //           labelText: "Start Time",
-            //         ),
-            //         validator: (value) {
-            //           if (value == null || value == "")
-            //             return "Please select start time.";
-
-            //           return null;
-            //         },
-            //         onSave: (date) => _model.startTime = date,
-            //         textStyle: TextStyle(
-            //           color: AppColors.black,
-            //           fontSize: 17.0,
-            //         ),
-            //         type: DateTimeSelectionType.time,
-            //       ),
-            //     ),
-            //     SizedBox(width: 20.0),
-            //     Expanded(
-            //       child: DateTimeSelectorFormField(
-            //         controller: _model.endTimeController,
-            //         decoration: AppConstants.inputDecoration.copyWith(
-            //           labelText: "End Time",
-            //         ),
-            //         validator: (value) {
-            //           if (value == null || value == "")
-            //             return "Please select end time.";
-
-            //           return null;
-            //         },
-            //         onSave: (date) => _model.endTime = date,
-            //         textStyle: TextStyle(
-            //           color: AppColors.black,
-            //           fontSize: 17.0,
-            //         ),
-            //         type: DateTimeSelectionType.time,
-            //       ),
-            //     ),
-            //   ],
-            // ),
             SizedBox(
               height: 15,
             ),
@@ -297,7 +252,7 @@ class _AddEventWidgetState extends State<AddEventWidget> {
             ),
             CustomMainButton(
               onPressed: () {
-                createEvent(_model, widget.onEventAdd);
+                createEvent(context, _model, widget.onEventAdd);
               },
               buttonText: "Add Event",
             ),

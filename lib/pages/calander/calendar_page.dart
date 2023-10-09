@@ -21,12 +21,19 @@ class CalendarWidget extends StatefulWidget {
 
 class _CalendarWidgetState extends State<CalendarWidget> {
   late CalendarModel _model;
-
+  late EventController<Object?> controllerProvider;
+  Stream<List<EventRecord>>? _firestoreEventsStream;
   void initState() {
     super.initState();
-    _model = createModel(context, () => CalendarModel());
 
+    _model = createModel(context, () => CalendarModel());
     getAllEvents();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    controllerProvider = CalendarControllerProvider.of(context).controller;
   }
 
   getAllEvents() async {
@@ -36,29 +43,36 @@ class _CalendarWidgetState extends State<CalendarWidget> {
     List<CalendarEventData<Event>> calendarEvents =
         convertFirestoreEventsToCalendar(firestoreEvents);
 
-    setState(() {
-      _model.events = generateEventsFromHolidays(holidays);
+    _model.events = generateEventsFromHolidays(holidays);
 
-      calendarEvents = calendarEvents.map((event) {
-        print(event.date);
-        DateTime normalizedDate =
-            DateTime(event.date.year, event.date.month, event.date.day, 0, 0);
+    calendarEvents = calendarEvents.map((event) {
+      print(event.date);
+      DateTime normalizedDate =
+          DateTime(event.date.year, event.date.month, event.date.day, 0, 0);
 
-        return CalendarEventData<Event>(
-          date: normalizedDate,
-          title: event.title,
-          color: event.color,
-          description: event.description,
-          endDate: event.endDate,
-          endTime: event.endDate,
-          event: event.event,
-          startTime: normalizedDate,
-        );
-      }).toList();
+      return CalendarEventData<Event>(
+        date: normalizedDate,
+        title: event.title,
+        color: event.color,
+        description: event.description,
+        endDate: event.endDate,
+        endTime: event.endDate,
+        event: event.event,
+        startTime: normalizedDate,
+      );
+    }).toList();
 
-      _model.events.addAll(calendarEvents);
+    _model.events.addAll(calendarEvents);
 
-      CalendarControllerProvider.of(context).controller.addAll(_model.events);
+    controllerProvider.addAll(_model.events);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _model.events.forEach((event) {
+      controllerProvider.remove(event);
     });
   }
 
