@@ -56,23 +56,10 @@ createEvent(context, AddEventModel _model, onAddEvet) async {
 
   _model.formKey.currentState?.save();
 
-  // final event = CalendarEventData<Event>(
-  //   date: _model.startDate,
-  //   startTime: _model.startDate,
-  //   color: _model.color,
-  //   description: _model.description,
-  //   endDate: _model.endDate,
-  //   endTime: _model.endDate,
-  //   title: _model.title,
-  //   event: Event(
-  //     title: _model.title,
-  //   ),
-  // );
 
-  // onAddEvet?.call();
+
   Navigator.pop(context);
 
-  // CalendarControllerProvider.of(context).controller.add(event);
 
   Map<String, dynamic> eventData = createEventRecordData(
       title: _model.title,
