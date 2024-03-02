@@ -12,8 +12,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.onBackground,
     required this.surface,
     required this.onSurface,
-
-
   });
 
   final Color primary;
@@ -39,7 +37,6 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? onBackground,
     Color? surface,
     Color? onSurface,
-    
   }) {
     return AppColorsExtension(
       primary: primary ?? this.primary,
@@ -84,7 +81,6 @@ extension ColorSchemeBuilder on AppColorsExtension {
   ColorScheme toColorScheme(Brightness brightness) {
     return ColorScheme(
       brightness: brightness,
-      
       primary: primary,
       onPrimary: onPrimary,
       secondary: secondary,

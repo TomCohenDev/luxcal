@@ -127,8 +127,8 @@ class SizeConversionUtils {
     return sizes;
   }
 
-  static final double minEUSize = 35.0;
-  static final double maxEUSize = 43.5;
+  static const double minEUSize = 35.0;
+  static const double maxEUSize = 43.5;
 
   static List<String> generateShoeSizesEU() {
     List<String> sizes = [];
@@ -272,7 +272,7 @@ class SizeConversionUtils {
     if (size == "30") return "00";
     int numericSize = int.tryParse(size) ?? 0;
     if (numericSize - 32 >= 22) {
-      return (numericSize - 32).toString() + 'W';
+      return '${numericSize - 32}W';
     }
     return (numericSize - 32).toString();
   }

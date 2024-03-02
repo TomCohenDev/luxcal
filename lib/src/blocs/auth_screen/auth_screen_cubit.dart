@@ -1,9 +1,8 @@
+import 'package:LuxCal/src/models/user_model.dart';
+import 'package:LuxCal/src/repositories/auth_repo.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:revampedai/aaasrc/models/user_model.dart';
-import 'package:revampedai/aaasrc/repositories/auth_repo.dart';
 
 part 'auth_screen_state.dart';
 
@@ -12,39 +11,6 @@ class AuthScreenCubit extends Cubit<AuthScreenState> {
   AuthScreenCubit({required AuthRepository authRepository})
       : _authRepository = authRepository,
         super(AuthScreenState.initial());
-
-  Future<void> logInWithGoogle() async {
-    if (state.status == AuthScreenStatus.submitting) return;
-    emit(state.copyWith(status: AuthScreenStatus.submitting));
-    try {
-      await _authRepository.logInWithGoogle();
-      emit(state.copyWith(status: AuthScreenStatus.success));
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> logInWithApple() async {
-    if (state.status == AuthScreenStatus.submitting) return;
-    emit(state.copyWith(status: AuthScreenStatus.submitting));
-    try {
-      await _authRepository.logInWithApple();
-      emit(state.copyWith(status: AuthScreenStatus.success));
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> logInWithFacebook() async {
-    if (state.status == AuthScreenStatus.submitting) return;
-    emit(state.copyWith(status: AuthScreenStatus.submitting));
-    try {
-      await _authRepository.logInWithFacebook();
-      emit(state.copyWith(status: AuthScreenStatus.success));
-    } catch (e) {
-      print(e);
-    }
-  }
 
   Future<void> logInWithCredentials() async {
     if (state.status == AuthScreenStatus.submitting) return;

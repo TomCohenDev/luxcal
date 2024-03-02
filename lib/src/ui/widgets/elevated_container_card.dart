@@ -21,7 +21,7 @@ class ElevatedContainerCard extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.25),
                 spreadRadius: 3,
                 blurRadius: 8,
-                offset: Offset(0, 7), // changes position of shadow
+                offset: const Offset(0, 7), // changes position of shadow
               ),
         ],
         borderRadius: BorderRadius.circular(20),

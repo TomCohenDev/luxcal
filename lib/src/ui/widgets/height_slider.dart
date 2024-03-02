@@ -41,7 +41,7 @@ class _HeightSliderState extends State<HeightSlider> {
     return Container(
       height: widget.widgetHeight,
       width: widget.widgetWidth,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Color.fromARGB(0, 0, 0, 0),
       ),
       child: Stack(
@@ -58,7 +58,7 @@ class _HeightSliderState extends State<HeightSlider> {
   Widget indicatorLineSlider() {
     return Container(
       height: 43,
-      color: Color.fromARGB(0, 255, 193, 7),
+      color: const Color.fromARGB(0, 255, 193, 7),
       child: Stack(
         children: [
           Padding(
@@ -95,7 +95,7 @@ class _HeightSliderState extends State<HeightSlider> {
                 color: widget.numberLineColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.unfold_more,
                 color: Colors.white,
                 size: 0.6 * 32.0,
@@ -149,17 +149,17 @@ class _HeightSliderState extends State<HeightSlider> {
               secondaryActiveTrackColor: Colors.transparent,
               thumbColor: Colors.transparent,
               valueIndicatorColor: Colors.transparent,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
-              valueIndicatorTextStyle: TextStyle(
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0.0),
+              valueIndicatorTextStyle: const TextStyle(
                 color: Colors.transparent,
               ),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 0.0),
             ),
             child: Transform.rotate(
               angle: -math.pi / 2,
-              alignment: Alignment(0, -0.4),
+              alignment: const Alignment(0, -0.4),
               child: Container(
-                color: Color.fromARGB(0, 0, 0, 0),
+                color: const Color.fromARGB(0, 0, 0, 0),
                 width: widget.widgetHeight * 0.53,
                 child: Slider(
                   activeColor: Colors.transparent,
@@ -200,7 +200,7 @@ class _HeightSliderState extends State<HeightSlider> {
     double sliderFilledHeight = widget.widgetHeight * 0.6 * sliderPercent;
 
     return Align(
-      alignment: Alignment(0.9, -1),
+      alignment: const Alignment(0.9, -1),
       child: Container(
         height: widget.widgetHeight * 0.6,
         width: 50,
@@ -211,7 +211,7 @@ class _HeightSliderState extends State<HeightSlider> {
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 8,
-              offset: Offset(0, 15), // changes position of shadow
+              offset: const Offset(0, 15), // changes position of shadow
             ),
           ],
           borderRadius: BorderRadius.circular(20),
@@ -222,7 +222,7 @@ class _HeightSliderState extends State<HeightSlider> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(top: 0 /*paddingTop*/),
+                padding: const EdgeInsets.only(top: 0 /*paddingTop*/),
                 child: Container(
                   height: sliderFilledHeight, //filledHeight,
                   decoration: BoxDecoration(
@@ -250,8 +250,8 @@ class _HeightSliderState extends State<HeightSlider> {
     paddingTop = math.max(0, paddingTop);
     paddingTop = math.min(20, paddingTop);
     return Align(
-      alignment: Alignment(0.5, 1),
-      child: Container(
+      alignment: const Alignment(0.5, 1),
+      child: SizedBox(
         height: widget.widgetHeight * imageHeight,
         child: Padding(
           padding: EdgeInsets.only(top: paddingTop),
@@ -290,7 +290,7 @@ class _HeightSliderState extends State<HeightSlider> {
 
     return IgnorePointer(
       child: Padding(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           // right: 12.0,
           bottom: 12.0,
           top: 12.0,

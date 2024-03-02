@@ -1,7 +1,7 @@
 // auth_utils.dart
+import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
+import 'package:LuxCal/src/models/user_model.dart';
 import 'package:get_it/get_it.dart';
-import 'package:revampedai/aaasrc/blocs/auth/auth_bloc.dart';
-import 'package:revampedai/aaasrc/models/user_model.dart';
 
 class AuthUtils {
   static UserModel get currentUser {

@@ -1,16 +1,17 @@
-import 'package:LuxCal/navigation/navigation.dart';
+import 'package:LuxCal/core/config/app_router.dart';
+import 'package:LuxCal/core/theme/theme.dart';
+import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
+import 'package:LuxCal/src/blocs/auth_screen/auth_screen_cubit.dart';
+import 'package:LuxCal/src/repositories/auth_repo.dart';
+import 'package:LuxCal/src/repositories/user_repo.dart';
+import 'package:LuxCal/temp/utils/utils.dart';
 import 'package:calendar_view/calendar_view.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:LuxCal/utils/utils.dart';
-import 'package:LuxCal/pages/first_screen/first_screen_page.dart';
-import 'package:LuxCal/pages/home/home_view.dart';
-import 'package:LuxCal/pages/login/login_page.dart';
-import 'package:LuxCal/pages/nickname/nickname_page.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -18,7 +19,6 @@ void setupLocator() {
   getIt.registerLazySingleton<UserRepository>(() => UserRepository());
   getIt.registerLazySingleton<AuthRepository>(
       () => AuthRepository(userRepository: getIt<UserRepository>()));
-  getIt.registerLazySingleton<SizesRepository>(() => SizesRepository());
 
   getIt.registerLazySingleton<AuthBloc>(() => AuthBloc(
         authRepository: getIt<AuthRepository>(),
@@ -28,18 +28,16 @@ void setupLocator() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   await GetStorage.init();
-  await Notifications().initNotifications();
+  // await Notifications().initNotifications();
   setupLocator();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -68,14 +66,12 @@ class _MyAppState extends State<MyApp> {
         ],
         child: CalendarControllerProvider(
           controller: EventController(),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
+          child: MaterialApp.router(
             scaffoldMessengerKey: Utils.messengerKey,
-            home: !storage.read('display_first_screen')
-                ? (currentUser != null && currentUser!.loggedIn)
-                    ? NavigationWidget()
-                    : LoginWidget()
-                : FirstScreenWidget(),
+            debugShowCheckedModeBanner: false,
+            title: 'LuxCal',
+            theme: AppTheme.mainTheme,
+            routerConfig: router,
           ),
         ),
       ),

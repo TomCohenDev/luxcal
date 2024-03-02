@@ -1,8 +1,5 @@
+import 'package:LuxCal/src/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:revampedai/aaasrc/models/user_model.dart';
-
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 abstract class BaseUserRepository {
   Stream<UserModel> getUser(String uid);
