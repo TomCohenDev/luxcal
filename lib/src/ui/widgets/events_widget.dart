@@ -32,7 +32,6 @@ class _EventsWidgetState extends State<EventsWidget> {
       },
       builder: (context, state) {
         return Container(
-          height: context.height,
           width: context.width,
           color: Color.fromARGB(0, 0, 0, 0),
           child: Stack(
@@ -41,6 +40,8 @@ class _EventsWidgetState extends State<EventsWidget> {
               Padding(
                 padding: const EdgeInsets.only(top: 40.0),
                 child: ElevatedContainerCard(
+                  width: context.width,
+                  height: 20,
                   boxShaow: BoxShadow(
                     color: Colors.black.withOpacity(0.3),
                     spreadRadius: 1,
@@ -94,7 +95,7 @@ class _EventsWidgetState extends State<EventsWidget> {
         chooseTab(index);
       },
       child: Container(
-        height: 200,
+        height: 100,
         padding: EdgeInsets.only(top: 10, bottom: 4, right: 8, left: 8),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),

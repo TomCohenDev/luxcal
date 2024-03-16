@@ -23,25 +23,21 @@ class CalendarScreen extends StatelessWidget {
       builder: (context, state) {
         return CustomScaffold(
           body: SafeArea(
-            child: SingleChildScrollView(
-              child: Center(
-                child: Stack(
-                  alignment: Alignment.topCenter,
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _header(),
-                        spacer(20),
-                        _calendar(context),
-                        _events(context),
-                      ],
-                    ),
-                    _contactsButton(context),
+                    _header(),
+                    spacer(20),
+                    _calendar(context),
+                    _events(context),
                   ],
                 ),
-              ),
+                _contactsButton(context),
+              ],
             ),
           ),
         );
@@ -53,7 +49,7 @@ class CalendarScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Align(
-        alignment: Alignment(0.9, 0),
+        alignment: Alignment(0.9, -1),
         child: InkWell(
           onTap: () {
             context.push("/profile");
