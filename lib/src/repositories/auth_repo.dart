@@ -1,8 +1,5 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/repositories/user_repo.dart';
-import 'package:crypto/src/sha256.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
@@ -34,6 +31,9 @@ class AuthRepository extends BaseAuthRepository {
     required UserModel userModel,
     required String password,
   }) async {
+    print(userModel.email);
+    print(password);
+
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: userModel.email!,

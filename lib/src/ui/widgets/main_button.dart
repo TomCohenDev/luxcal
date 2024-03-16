@@ -2,7 +2,6 @@
 
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
-import 'package:LuxCal/temp/utils/screen_sizes.dart';
 import 'package:flutter/material.dart';
 
 class MainButton extends StatelessWidget {

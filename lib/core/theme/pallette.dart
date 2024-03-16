@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 abstract class AppPalette {
   static const white = Colors.white;
   static const tuna = Color(0xff38324E);
+  static const crayola = Color(0xffFFCB66);
+  static const jacarta = Color(0xff403A60);
+  static const teal = Color(0xff008080);
+  static const light_green = Color(0xff9BD886);
+
   static const gradients = _Gradients();
 }
 

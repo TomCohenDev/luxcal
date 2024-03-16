@@ -27,13 +27,13 @@ class AuthScreenCubit extends Cubit<AuthScreenState> {
     }
   }
 
-  Future<void> signUpWithCredentials() async {
+  Future<void> signUpWithCredentials(UserModel userModel, String pass) async {
     if (state.status == AuthScreenStatus.submitting) return;
     emit(state.copyWith(status: AuthScreenStatus.submitting));
 
     try {
       var authUser = await _authRepository.signUpWithEmail(
-          userModel: state.userModel!, password: state.password);
+          userModel: userModel, password: pass);
       emit(
           state.copyWith(status: AuthScreenStatus.success, authUser: authUser));
     } catch (e) {

@@ -1,3 +1,4 @@
+import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:flutter/material.dart';
 
 class ElevatedContainerCard extends StatelessWidget {
@@ -14,14 +15,14 @@ class ElevatedContainerCard extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppPalette.jacarta,
         boxShadow: [
           boxShaow ??
               BoxShadow(
-                color: Colors.grey.withOpacity(0.25),
-                spreadRadius: 3,
-                blurRadius: 8,
-                offset: const Offset(0, 7), // changes position of shadow
+                color: Colors.black.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 4),
               ),
         ],
         borderRadius: BorderRadius.circular(20),

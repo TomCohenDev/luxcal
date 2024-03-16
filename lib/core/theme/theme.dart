@@ -11,6 +11,7 @@ class AppTheme {
   static ThemeData get mainTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppPalette.tuna,
+      
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:LuxCal/src/ui/screens/auth_screen.dart';
+import 'package:LuxCal/src/ui/screens/calendar_screen.dart';
 import 'package:LuxCal/src/ui/screens/login_screen.dart';
+import 'package:LuxCal/src/ui/screens/nickname_screen.dart';
 import 'package:LuxCal/src/ui/screens/register_screen.dart';
 import 'package:LuxCal/src/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,14 @@ GoRouter router = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/nickname',
+      builder: (context, state) => NicknameScreen(),
+    ),
+    GoRoute(
+      path: '/calendar',
+      builder: (context, state) => CalendarScreen(),
     ),
   ],
 );

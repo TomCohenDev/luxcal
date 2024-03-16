@@ -1,10 +1,12 @@
 import 'package:LuxCal/core/config/app_router.dart';
 import 'package:LuxCal/core/theme/theme.dart';
+import 'package:LuxCal/firebase_options.dart';
 import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
 import 'package:LuxCal/src/blocs/auth_screen/auth_screen_cubit.dart';
+import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/repositories/auth_repo.dart';
 import 'package:LuxCal/src/repositories/user_repo.dart';
-import 'package:LuxCal/temp/utils/utils.dart';
+import 'package:LuxCal/src/utils/messenger.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -28,7 +30,9 @@ void setupLocator() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await GetStorage.init();
   // await Notifications().initNotifications();
   setupLocator();
@@ -63,16 +67,16 @@ class _MyAppState extends State<MyApp> {
               authRepository: getIt<AuthRepository>(),
             ),
           ),
-        ],
-        child: CalendarControllerProvider(
-          controller: EventController(),
-          child: MaterialApp.router(
-            scaffoldMessengerKey: Utils.messengerKey,
-            debugShowCheckedModeBanner: false,
-            title: 'LuxCal',
-            theme: AppTheme.mainTheme,
-            routerConfig: router,
+          BlocProvider<CalendarBloc>(
+            create: (context) => CalendarBloc(),
           ),
+        ],
+        child: MaterialApp.router(
+          scaffoldMessengerKey: Utils.messengerKey,
+          debugShowCheckedModeBanner: false,
+          title: 'LuxCal',
+          theme: AppTheme.mainTheme,
+          routerConfig: router,
         ),
       ),
     );

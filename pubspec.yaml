@@ -46,7 +46,7 @@ dependencies:
 
 
   # Firebase plugins
-  firebase_core: ^2.10.0
+  firebase_core: ^2.27.0
   cloud_firestore: ^4.5.2
   firebase_analytics: ^10.2.1
   firebase_auth: ^4.4.2
@@ -76,7 +76,8 @@ dependencies:
   get_it: ^7.6.7
   flutter_bloc: ^8.1.4
   equatable: ^2.0.5
-  flutter_svg: ^2.0.10+1
+  flutter_svg: ^2.0.6
+  flutter_material_color_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:

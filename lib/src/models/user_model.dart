@@ -3,14 +3,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class UserModel extends Equatable {
-  final String? uid;
-  final String? email;
-  final String? fullName;
-  final String? phoneNumber;
-  final String? nickName;
-  final Color? nickNameColor;
+  String? uid;
+  String? email;
+  String? fullName;
+  String? phoneNumber;
+  String? nickName;
+  Color? nickNameColor;
 
-  const UserModel({
+  UserModel({
     this.uid,
     this.email,
     this.fullName,
