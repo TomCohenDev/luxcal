@@ -15,13 +15,12 @@ class EventsWidget extends StatefulWidget {
 }
 
 class _EventsWidgetState extends State<EventsWidget> {
-  String tabText = 'Upcoming';
+  int tabIndex = 1;
   Alignment alignment = Alignment(-1, -1);
 
-  void chooseTab(String newTabText, Alignment newAlignment) {
+  void chooseTab(int index) {
     setState(() {
-      tabText = newTabText;
-      alignment = newAlignment;
+      tabIndex = index;
     });
   }
 
@@ -38,23 +37,7 @@ class _EventsWidgetState extends State<EventsWidget> {
           color: Color.fromARGB(0, 0, 0, 0),
           child: Stack(
             children: [
-              Align(
-                alignment: alignment,
-                child: Container(
-                  height: 200,
-                  padding:
-                      EdgeInsets.only(top: 10, bottom: 4, right: 8, left: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: AppPalette.jacarta,
-                  ),
-                  child: Text(
-                    tabText,
-                    style: AppTypography.eventsWidgetText
-                        .copyWith(color: Colors.transparent),
-                  ),
-                ),
-              ),
+              tabContainers(context, state),
               Padding(
                 padding: const EdgeInsets.only(top: 40.0),
                 child: ElevatedContainerCard(
@@ -65,60 +48,6 @@ class _EventsWidgetState extends State<EventsWidget> {
                     offset: const Offset(0, 20),
                   ),
                   child: Container(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8, left: 8),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        chooseTab("Upcoming", Alignment(-1, -1));
-                        context
-                            .read<CalendarBloc>()
-                            .add(ChangeTab(tab: CalendarTabs.upcoming));
-                      },
-                      child: Text(
-                        "Upcoming",
-                        style: AppTypography.eventsWidgetText.copyWith(
-                            color: tabText == "Upcoming"
-                                ? AppPalette.light_green
-                                : const Color.fromARGB(155, 255, 255, 255)),
-                      ),
-                    ),
-                    spacerWidth(25),
-                    InkWell(
-                      onTap: () {
-                        chooseTab("News", Alignment(-0.21, -1));
-                        context
-                            .read<CalendarBloc>()
-                            .add(ChangeTab(tab: CalendarTabs.news));
-                      },
-                      child: Text(
-                        "News",
-                        style: AppTypography.eventsWidgetText.copyWith(
-                            color: tabText == "News"
-                                ? AppPalette.light_green
-                                : const Color.fromARGB(155, 255, 255, 255)),
-                      ),
-                    ),
-                    spacerWidth(25),
-                    InkWell(
-                      onTap: () {
-                        chooseTab("Selection", Alignment(0.456, -1));
-                        context
-                            .read<CalendarBloc>()
-                            .add(ChangeTab(tab: CalendarTabs.selected));
-                      },
-                      child: Text(
-                        "Selection",
-                        style: AppTypography.eventsWidgetText.copyWith(
-                            color: tabText == "Selection"
-                                ? AppPalette.light_green
-                                : const Color.fromARGB(155, 255, 255, 255)),
-                      ),
-                    )
-                  ],
                 ),
               ),
               Align(
@@ -146,6 +75,38 @@ class _EventsWidgetState extends State<EventsWidget> {
           ),
         );
       },
+    );
+  }
+
+  Widget tabContainers(BuildContext context, CalendarState state) {
+    return Row(
+      children: [
+        _tabContainer("Upcoming", 1),
+        _tabContainer("News", 2),
+        _tabContainer("${state.selectedDay.day}.${state.selectedDay.month}", 3),
+      ],
+    );
+  }
+
+  Widget _tabContainer(String text, int index) {
+    return InkWell(
+      onTap: () {
+        chooseTab(index);
+      },
+      child: Container(
+        height: 200,
+        padding: EdgeInsets.only(top: 10, bottom: 4, right: 8, left: 8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: tabIndex == index ? AppPalette.jacarta : Colors.transparent),
+        child: Text(
+          text,
+          style: AppTypography.eventsWidgetText.copyWith(
+              color: tabIndex == index
+                  ? AppPalette.light_green
+                  : const Color.fromARGB(155, 255, 255, 255)),
+        ),
+      ),
     );
   }
 }

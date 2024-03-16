@@ -1,2 +1,1 @@
-class News {
-}
+class NewsModel {}

@@ -6,13 +6,14 @@ enum CalendarTabs { upcoming, news, selected }
 
 class CalendarState extends Equatable {
   final CalendarStatus status;
-  final List<Event>? events; // Assuming Event is a defined class
-  final List<News>? news; // Assuming News is a defined class
+  final List<EventModel>? events; // Assuming Event is a defined class
+  final List<NewsModel>? news; // Assuming News is a defined class
   final DateTime selectedDay;
   final DateTime focusedDay;
   final CalendarFormat calendarFormat;
   final String? errorMessage;
   final CalendarTabs tab;
+  final List<UserModel>? contacts;
 
   const CalendarState({
     this.status = CalendarStatus.initial,
@@ -23,6 +24,7 @@ class CalendarState extends Equatable {
     this.calendarFormat = CalendarFormat.month,
     this.errorMessage,
     this.tab = CalendarTabs.upcoming,
+    this.contacts,
   });
 
   factory CalendarState.initial() {
@@ -37,13 +39,14 @@ class CalendarState extends Equatable {
 
   CalendarState copyWith({
     CalendarStatus? status,
-    List<Event>? events,
-    List<News>? news,
+    List<EventModel>? events,
+    List<NewsModel>? news,
     DateTime? selectedDay,
     DateTime? focusedDay,
     CalendarFormat? calendarFormat,
     String? errorMessage,
     CalendarTabs? tab,
+    List<UserModel>? contacts,
   }) {
     return CalendarState(
       status: status ?? this.status,
@@ -54,6 +57,7 @@ class CalendarState extends Equatable {
       calendarFormat: calendarFormat ?? this.calendarFormat,
       errorMessage: errorMessage ?? this.errorMessage,
       tab: tab ?? this.tab,
+      contacts: contacts ?? this.contacts,
     );
   }
 
@@ -67,5 +71,6 @@ class CalendarState extends Equatable {
         calendarFormat,
         errorMessage,
         tab,
+        contacts,
       ];
 }

@@ -7,6 +7,7 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -37,7 +38,7 @@ class CalendarScreen extends StatelessWidget {
                         _events(context),
                       ],
                     ),
-                    _contactsButton(),
+                    _contactsButton(context),
                   ],
                 ),
               ),
@@ -48,13 +49,15 @@ class CalendarScreen extends StatelessWidget {
     );
   }
 
-  Padding _contactsButton() {
+  Padding _contactsButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Align(
         alignment: Alignment(0.9, 0),
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            context.push("/profile");
+          },
           child: Image.asset(
             'assets/icons/contacts.png',
             scale: 0.9,
