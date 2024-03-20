@@ -6,6 +6,7 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class EventsWidget extends StatefulWidget {
   const EventsWidget({super.key});
@@ -27,9 +28,7 @@ class _EventsWidgetState extends State<EventsWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarBloc, CalendarState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return Container(
           width: context.width,
@@ -41,7 +40,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                 padding: const EdgeInsets.only(top: 40.0),
                 child: ElevatedContainerCard(
                   width: context.width,
-                  height: 20,
+                  height: context.height * 0.25,
                   boxShaow: BoxShadow(
                     color: Colors.black.withOpacity(0.3),
                     spreadRadius: 1,
@@ -52,8 +51,59 @@ class _EventsWidgetState extends State<EventsWidget> {
                 ),
               ),
               Align(
-                alignment: Alignment(0.95, -0.99),
-                child: Container(
+                alignment: const Alignment(0.95, -0.99),
+                child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          backgroundColor: AppPalette.jacarta,
+                          title: Center(
+                            child: Text("Add",
+                                style: AppTypography.buttonText
+                                    .copyWith(fontSize: 24)),
+                          ),
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(Color(
+                                            0xFF185478)), // Replace with your color
+                                  ),
+                                  onPressed: () {
+                                    context.pop();
+
+                                    context.push("/addEvent");
+                                  },
+                                  child: Text("Event",
+                                      style: AppTypography.buttonText
+                                          .copyWith(fontSize: 16))),
+                              spacerWidth(20),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Color.fromARGB(255, 24, 120,
+                                                38)), // Replace with your color
+                                  ),
+                                  onPressed: () {
+                                    context.pop();
+
+                                    context.push("/addNews");
+                                  },
+                                  child: Text("News",
+                                      style: AppTypography.buttonText
+                                          .copyWith(fontSize: 16)))
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppPalette.jacarta,
@@ -66,11 +116,13 @@ class _EventsWidgetState extends State<EventsWidget> {
                         ),
                       ],
                     ),
-                    child: Icon(
+                    child: const Icon(
                       size: 28,
                       Icons.add,
                       color: AppPalette.light_green,
-                    )),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

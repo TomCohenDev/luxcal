@@ -1,3 +1,5 @@
+import 'package:LuxCal/src/ui/screens/add_event_screen.dart';
+import 'package:LuxCal/src/ui/screens/add_news_screen.dart';
 import 'package:LuxCal/src/ui/screens/auth_screen.dart';
 import 'package:LuxCal/src/ui/screens/calendar_screen.dart';
 import 'package:LuxCal/src/ui/screens/login_screen.dart';
@@ -41,6 +43,14 @@ GoRouter router = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/addEvent',
+      builder: (context, state) => AddEventScreen(),
+    ),
+    GoRoute(
+      path: '/addNews',
+      builder: (context, state) => AddNewsScreen(),
     ),
   ],
 );

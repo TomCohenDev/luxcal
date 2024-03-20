@@ -22,7 +22,7 @@ class UserRepository extends BaseUserRepository {
         .collection('users')
         .doc(uid)
         .snapshots()
-        .map((snap) => UserModel.fromSnapshot(snap));
+        .map((snap) => UserModel.fromFirestore(snap.data()!));
   }
 
   @override

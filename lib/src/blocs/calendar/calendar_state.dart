@@ -34,6 +34,9 @@ class CalendarState extends Equatable {
       selectedDay: DateTime.now(),
       calendarFormat: CalendarFormat.month,
       tab: CalendarTabs.upcoming,
+      news: [],
+      events: [],
+      contacts: [],
     );
   }
 

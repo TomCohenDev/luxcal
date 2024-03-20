@@ -4,7 +4,31 @@ abstract class CalendarEvent extends Equatable {
   const CalendarEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
+}
+
+class InilaizeCalendar extends CalendarEvent {
+  InilaizeCalendar();
+}
+
+class AddEvent extends CalendarEvent {
+  final EventModel event;
+  final XFile? image;
+
+  const AddEvent(this.event, [this.image]);
+
+  @override
+  List<Object?> get props => [event, image];
+}
+
+class AddNews extends CalendarEvent {
+  final NewsModel news;
+  final XFile? image;
+
+  const AddNews(this.news, [this.image]);
+
+  @override
+  List<Object?> get props => [news, image];
 }
 
 class DaySelected extends CalendarEvent {

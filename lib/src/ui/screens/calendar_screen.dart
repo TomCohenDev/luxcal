@@ -23,21 +23,23 @@ class CalendarScreen extends StatelessWidget {
       builder: (context, state) {
         return CustomScaffold(
           body: SafeArea(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _header(),
-                    spacer(20),
-                    _calendar(context),
-                    _events(context),
-                  ],
-                ),
-                _contactsButton(context),
-              ],
+            child: SingleChildScrollView(
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _header(),
+                      spacer(20),
+                      _calendar(context),
+                      _events(context),
+                    ],
+                  ),
+                  _contactsButton(context),
+                ],
+              ),
             ),
           ),
         );
