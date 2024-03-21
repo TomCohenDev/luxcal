@@ -73,21 +73,5 @@ abstract class AppTypography {
   );
 }
 
-extension GoogleFontsExtension on GoogleFonts {
-  static RevampedTextStyle getFont(String font) {
-    return const RevampedTextStyle();
-  }
-}
 
-class RevampedTextStyle extends TextStyle {
-  const RevampedTextStyle({
-    double? fontSize,
-    FontWeight? fontWeight,
-    FontStyle? fontStyle,
-  }) : super(
-          fontFamily: 'Poppins',
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          fontStyle: fontStyle,
-        );
-}
+

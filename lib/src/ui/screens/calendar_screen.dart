@@ -11,9 +11,14 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarScreen extends StatelessWidget {
+class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
+  @override
+  State<CalendarScreen> createState() => _CalendarScreenState();
+}
+
+class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarBloc, CalendarState>(
@@ -38,12 +43,41 @@ class CalendarScreen extends StatelessWidget {
                     ],
                   ),
                   _contactsButton(context),
+                  _settingsButton(context)
                 ],
               ),
             ),
           ),
+          drawer: _buildDrawer(context),
         );
       },
+    );
+  }
+
+  Drawer _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text(
+              'Settings',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Logout'),
+            onTap: () => Scaffold.of(context).openDrawer(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -63,6 +97,25 @@ class CalendarScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _settingsButton(BuildContext context) {
+    return Builder(builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Align(
+          alignment: Alignment(-0.9, -1),
+          child: InkWell(
+            onTap: () => Scaffold.of(context).openDrawer(),
+            child: Icon(
+              Icons.list,
+              size: 40,
+              color: Colors.amber,
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _calendar(BuildContext context) {

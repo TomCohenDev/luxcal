@@ -331,7 +331,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ),
       ],
     );
-  }
+  } 
 
   Widget _titleFromField() => Column(
         mainAxisSize: MainAxisSize.min,

@@ -25,14 +25,12 @@ class _NicknameScreenState extends State<NicknameScreen> {
   final formKey = GlobalKey<FormState>();
   // Controllers
   final TextEditingController nicknameController = TextEditingController();
-  final TextEditingController colorHexController = TextEditingController();
   Color selectedColor = Colors.red;
 
   @override
   void dispose() {
     final formKey = GlobalKey<FormState>();
     nicknameController.dispose();
-    colorHexController.dispose();
     super.dispose();
   }
 
