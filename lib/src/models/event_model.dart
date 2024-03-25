@@ -10,7 +10,9 @@ class EventModel {
   final String? location;
   final Color? color;
   final String? imageUrl;
-  final String authorId; // New field
+  final String? authorId;
+  final String? authorName; // New field for author name
+  final String? authorNickname; // New field for author nickname
 
   EventModel({
     required this.id,
@@ -21,7 +23,9 @@ class EventModel {
     this.location,
     required this.color,
     this.imageUrl,
-    required this.authorId, // New field
+    this.authorId,
+    this.authorName, // New field
+    this.authorNickname, // New field
   });
 
   // Factory constructor to create an EventModel from a Firestore document
@@ -36,7 +40,21 @@ class EventModel {
       location: firestoreDoc['location'] as String?,
       color:
           firestoreDoc['color'] != null ? Color(firestoreDoc['color']) : null,
-      authorId: firestoreDoc['authorId'] as String, // New field
+      authorId: firestoreDoc['authorId'] as String,
+      authorName: firestoreDoc['authorName'] as String, // New field
+      authorNickname: firestoreDoc['authorNickname'] as String, // New field
+    );
+  }
+
+  factory EventModel.fromJson(Map<String, dynamic> json) {
+    print(json);
+    return EventModel(
+      id: '',
+      title: json['title'],
+      description: json['memo'],
+      startDate: DateTime.parse(json['date']),
+      endDate: DateTime.parse(json['date']),
+      color: Color.fromARGB(255, 7, 85, 255),
     );
   }
 
@@ -51,7 +69,9 @@ class EventModel {
       'endDate': Timestamp.fromDate(endDate),
       'location': location,
       'color': color?.value,
-      'authorId': authorId, // New field
+      'authorId': authorId,
+      'authorName': authorName, // New field
+      'authorNickname': authorNickname, // New field
     };
   }
 
@@ -64,7 +84,9 @@ class EventModel {
     String? location,
     Color? color,
     String? imageUrl,
-    String? authorId, // New field
+    String? authorId,
+    String? authorName,
+    String? authorNickname,
   }) {
     return EventModel(
       id: id ?? this.id,
@@ -75,7 +97,9 @@ class EventModel {
       location: location ?? this.location,
       color: color ?? this.color,
       imageUrl: imageUrl ?? this.imageUrl,
-      authorId: authorId ?? this.authorId, // New field
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      authorNickname: authorNickname ?? this.authorNickname,
     );
   }
 

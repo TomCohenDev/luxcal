@@ -35,13 +35,13 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
     if (formKey.currentState?.validate() ?? false) {
       // Assuming form validation is passed
       final NewsModel newNews = NewsModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        author: AuthUtils.currentUser.fullName!,
-        headline: headlineController.text,
-        content: contentController.text,
-        publicationDate: DateTime.now(),
-        authorId: AuthUtils.currentUserId
-      );
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          author: AuthUtils.currentUser.fullName!,
+          headline: headlineController.text,
+          content: contentController.text,
+          publicationDate: DateTime.now(),
+          authorId: AuthUtils.currentUserId,
+          authorNickname: AuthUtils.currentUser.nickName!);
 
       context.read<CalendarBloc>().add(AddNews(newNews, pickedImage));
       context.pop();

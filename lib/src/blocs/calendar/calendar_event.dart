@@ -76,3 +76,50 @@ class FormatChanged extends CalendarEvent {
   @override
   List<Object> get props => [format];
 }
+
+class DeleteEvent extends CalendarEvent {
+  final String eventId;
+
+  const DeleteEvent({required this.eventId});
+
+  @override
+  List<Object> get props => [eventId];
+}
+
+class DeleteNews extends CalendarEvent {
+  final String newsId;
+
+  const DeleteNews({required this.newsId});
+
+  @override
+  List<Object> get props => [newsId];
+}
+
+class UpdateEvent extends CalendarEvent {
+  final EventModel updatedEvent;
+  final XFile? pickedImage;
+
+  const UpdateEvent({required this.updatedEvent, this.pickedImage});
+
+  @override
+  List<Object?> get props => [updatedEvent, pickedImage];
+}
+
+class UpdateNews extends CalendarEvent {
+  final NewsModel updatedNews;
+  final XFile? pickedImage;
+
+  const UpdateNews({required this.updatedNews, this.pickedImage});
+
+  @override
+  List<Object?> get props => [updatedNews, pickedImage];
+}
+
+class GetHolidaysForYear extends CalendarEvent {
+  final int year;
+
+  const GetHolidaysForYear({required this.year});
+
+  @override
+  List<Object> get props => [year];
+}

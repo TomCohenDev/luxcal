@@ -16,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,6 +49,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      throw 'Could not launch $launchUri';
+    }
+  }
+
   void _filterContacts() {
     final query = contactNameController.text.toLowerCase();
     final bloc = context.read<CalendarBloc>();
@@ -68,6 +81,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }).toList();
       });
     }
+  }
+
+  Color getfieldColor(Color backgroundColor) {
+    int r = (backgroundColor.red + 18 <= 255) ? backgroundColor.red + 18 : 255;
+    int g =
+        (backgroundColor.green + 18 <= 255) ? backgroundColor.green + 18 : 255;
+    int b =
+        (backgroundColor.blue + 18 <= 255) ? backgroundColor.blue + 18 : 255;
+
+    return Color.fromARGB(backgroundColor.alpha, r, g, b);
   }
 
   @override
@@ -198,6 +221,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textField: TextField(
                           controller: nicknameController,
                           keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                              fillColor: getfieldColor(selectedColor)),
                         ),
                       ),
                     ),
@@ -223,6 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textField: TextField(
                           controller: fullNameController,
                           keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                              fillColor: getfieldColor(selectedColor)),
                         ),
                       ),
                     ),
@@ -317,8 +344,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 .copyWith(fontSize: 20, fontWeight: FontWeight.w200)),
         trailing: Icon(FontAwesomeIcons.phone,
             color: Colors.white), // phone icon on the right
-        onTap: () {
-          // action to perform on tap, like opening contact details or initiating a call
+        onTap: () async {
+          _makePhoneCall(contactModel.phoneNumber!);
         },
       ),
     );

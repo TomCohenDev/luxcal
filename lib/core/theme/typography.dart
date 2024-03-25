@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract class AppTypography {
+  static final textFieldTextLight = GoogleFonts.getFont(
+    "Poppins",
+    fontSize: 16,
+    color: AppPalette.white,
+    fontWeight: FontWeight.w300,
+  );
+
   static final eventsWidgetText = GoogleFonts.getFont(
     "Poppins",
     fontSize: 18,
@@ -72,6 +79,3 @@ abstract class AppTypography {
     fontWeight: FontWeight.bold,
   );
 }
-
-
-

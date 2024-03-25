@@ -12,7 +12,7 @@ class EventFieldsTextfield extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: BoxDecoration( 
         borderRadius: BorderRadius.circular(20.0),
         boxShadow: [
           BoxShadow(
@@ -24,6 +24,8 @@ class EventFieldsTextfield extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        enabled: textField.enabled,
+        readOnly: textField.readOnly,
         maxLines: textField.maxLines,
         minLines: textField.minLines,
         expands: textField.expands,
@@ -31,11 +33,13 @@ class EventFieldsTextfield extends StatelessWidget {
         textCapitalization: textField.textCapitalization,
         obscureText: textField.obscureText,
         decoration: InputDecoration(
+            suffix: textField.decoration?.suffix,
+            suffixIcon: textField.decoration?.suffixIcon,
             hintText: textField.decoration?.labelText,
             hintStyle: textField.decoration?.labelStyle ??
                 AppTypography.textFieldText.copyWith(fontSize: 16),
             filled: true,
-            fillColor: AppPalette.jacarta,
+            fillColor: textField.decoration?.fillColor ?? AppPalette.jacarta,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20.0),
               borderSide: BorderSide.none,

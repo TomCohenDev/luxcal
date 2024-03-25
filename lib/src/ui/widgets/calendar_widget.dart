@@ -51,6 +51,9 @@ class CalendarWidget extends StatelessWidget {
                 lastDate: DateTime(DateTime.now().year + 100, 1),
                 selectedDate: focusedDay,
                 onChanged: (DateTime dateTime) {
+                  context
+                      .read<CalendarBloc>()
+                      .add(GetHolidaysForYear(year: dateTime.year));
                   Navigator.pop(context, dateTime);
                 },
               ),

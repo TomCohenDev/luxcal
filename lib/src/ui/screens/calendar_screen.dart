@@ -89,7 +89,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   style: AppTypography.mainButton,
                 ),
                 onTap: () {
-                  context.read<AuthBloc>().add(AuthLogoutRequested());
+                  context.read<AuthBloc>().add(DeleteUserRequest());
                   context.go('/login');
                 },
               ),

@@ -7,7 +7,8 @@ class NewsModel {
   final DateTime publicationDate;
   final String author;
   final String? imageUrl;
-  final String authorId; // New field
+  final String authorId;
+  final String authorNickname; // New field for author nickname
 
   NewsModel({
     this.id,
@@ -16,7 +17,8 @@ class NewsModel {
     required this.publicationDate,
     required this.author,
     this.imageUrl,
-    required this.authorId, // New field
+    required this.authorId,
+    required this.authorNickname, // New field
   });
 
   // Factory constructor to create a NewsModel from a Firestore document
@@ -28,7 +30,8 @@ class NewsModel {
       content: firestoreDoc['content'],
       publicationDate: (firestoreDoc['publicationDate'] as Timestamp).toDate(),
       author: firestoreDoc['author'],
-      authorId: firestoreDoc['authorId'], // New field
+      authorId: firestoreDoc['authorId'],
+      authorNickname: firestoreDoc['authorNickname'], // New field
     );
   }
 
@@ -41,7 +44,8 @@ class NewsModel {
       'publicationDate': Timestamp.fromDate(publicationDate),
       'author': author,
       'imageUrl': imageUrl,
-      'authorId': authorId, // New field
+      'authorId': authorId,
+      'authorNickname': authorNickname, // New field
     };
   }
 
@@ -52,7 +56,8 @@ class NewsModel {
     DateTime? publicationDate,
     String? author,
     String? imageUrl,
-    String? authorId, // New field
+    String? authorId,
+    String? authorNickname,
   }) {
     return NewsModel(
       id: id ?? this.id,
@@ -61,7 +66,8 @@ class NewsModel {
       publicationDate: publicationDate ?? this.publicationDate,
       author: author ?? this.author,
       imageUrl: imageUrl ?? this.imageUrl,
-      authorId: authorId ?? this.authorId, // New field
+      authorId: authorId ?? this.authorId,
+      authorNickname: authorNickname ?? this.authorNickname,
     );
   }
 }

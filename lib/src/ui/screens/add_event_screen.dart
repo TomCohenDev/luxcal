@@ -51,6 +51,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
           "Please make sure you have selected a time and a date");
       return;
     }
+
+    if (startDate!.isAfter(endDate!)) {
+      Utils.showSnackBar("Invalid start and end dates");
+      return;
+    }
     final EventModel newEvent = EventModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: titleController.text,
@@ -59,6 +64,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
         endDate: endDate!,
         color: pickedColor,
         location: locationController.text,
+        authorName: AuthUtils.currentUser.fullName!,
+        authorNickname: AuthUtils.currentUser.nickName!,
         authorId: AuthUtils.currentUserId);
 
     context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));

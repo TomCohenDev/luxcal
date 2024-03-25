@@ -6,6 +6,7 @@ import 'package:LuxCal/src/models/news_model.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -105,8 +106,6 @@ class _EventsWidgetState extends State<EventsWidget> {
                         1 => _listBuilderEvents(upcomingEvents),
                         2 => _listBuilderNews(news),
                         3 => _listBuilderSelectedDay(selectedDayEvents),
-
-                        // TODO: Handle this case.
                         int() => null,
                       }),
                 ),
@@ -250,7 +249,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                         .copyWith(fontSize: 18, fontWeight: FontWeight.w900),
                   ),
                   Text(
-                    "In ${event.startDate.day - DateTime.now().day} Days",
+                    "In ${event.startDate.getDayDifference(DateTime.now())} Days",
                     style: AppTypography.calendarDays
                         .copyWith(fontSize: 14, fontWeight: FontWeight.w900),
                   ),

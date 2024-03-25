@@ -6,8 +6,15 @@ class ElevatedContainerCard extends StatelessWidget {
   double? width;
   double? height;
   BoxShadow? boxShaow;
-  ElevatedContainerCard(
-      {super.key, required this.child, this.height, this.width, this.boxShaow});
+  Color? color;
+  ElevatedContainerCard({
+    super.key,
+    required this.child,
+    this.height,
+    this.width,
+    this.boxShaow,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,7 @@ class ElevatedContainerCard extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: AppPalette.jacarta,
+        color: color ?? AppPalette.jacarta,
         boxShadow: [
           boxShaow ??
               BoxShadow(
