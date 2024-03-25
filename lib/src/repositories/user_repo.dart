@@ -2,10 +2,10 @@ import 'package:LuxCal/src/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class BaseUserRepository {
-  Stream<UserModel> getUser(String uid);
+  Stream<UserModel?> getUser(String uid);
   Future<void> createUser(UserModel user);
   Future<void> updateUser(UserModel user);
-  // Future<void> deleteUser(UserModel user);
+  Future<void> deleteUser(UserModel user);
 }
 
 class UserRepository extends BaseUserRepository {
@@ -16,13 +16,19 @@ class UserRepository extends BaseUserRepository {
   }) : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
 
   @override
-  Stream<UserModel> getUser(String uid) {
+  Stream<UserModel?> getUser(String uid) {
     print('getting user data from firestore');
     return _firebaseFirestore
         .collection('users')
         .doc(uid)
         .snapshots()
-        .map((snap) => UserModel.fromFirestore(snap.data()!));
+        .map((snap) {
+      if (snap.data() != null) {
+        return UserModel.fromFirestore(snap);
+      } else {
+        return null;
+      }
+    });
   }
 
   @override
@@ -49,8 +55,14 @@ class UserRepository extends BaseUserRepository {
         .then((value) => print('user doc updated'));
   }
 
-  // @override
-  // Future<void> deleteUser(UserModel user) {
-  //   return () {};
-  // }
+  @override
+  Future<void> deleteUser(UserModel user) async {
+    print('deleting user');
+    return await _firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .delete()
+        .then((value) => print('User deleted'))
+        .catchError((error) => print('Failed to delete user: $error'));
+  }
 }

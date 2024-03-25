@@ -26,6 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthUserChanged>(_onAuthUserChanged);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<UserUpdated>(_onUserUpdated);
+    on<DeleteUserRequest>(_onDeleteUserRequest);
+
     _authUserSubscription = _authRepository.user.listen((authUser) {
       if (authUser != null) {
         print("auth user: ${authUser.email}");
@@ -39,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
-    event.authUser != null
+    event.authUser != null && event.userModel != null
         ? emit(AuthState.authenticated(
             authUser: event.authUser!, userModel: event.userModel!))
         : emit(const AuthState.unauthenticated());
@@ -63,5 +65,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _authUserSubscription?.cancel();
     _userSubscription?.cancel();
     return super.close();
+  }
+
+  FutureOr<void> _onDeleteUserRequest(
+      DeleteUserRequest event, Emitter<AuthState> emit) async {
+    await _authRepository.deleteAuthUser();
+
+    emit(const AuthState.unauthenticated());
   }
 }

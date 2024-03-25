@@ -9,7 +9,10 @@ import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
+import 'package:LuxCal/src/utils/auth_utils.dart';
+import 'package:LuxCal/src/utils/messenger.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
+import 'package:LuxCal/src/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -26,7 +29,7 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -37,23 +40,29 @@ class _AddEventScreenState extends State<AddEventScreen> {
   XFile? pickedImage;
 
   void _onButtonPress() {
-    if (formKey.currentState?.validate() ?? false) {
-      final EventModel newEvent = EventModel(
-        id: DateTime.now()
-            .millisecondsSinceEpoch
-            .toString(), // unique ID for the new event
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) return;
+
+    if (startDate == null ||
+        endDate == null ||
+        startDate?.hour == null ||
+        endDate?.hour == null) {
+      Utils.showSnackBar(
+          "Please make sure you have selected a time and a date");
+      return;
+    }
+    final EventModel newEvent = EventModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: titleController.text,
         description: descriptionController.text,
         startDate: startDate!,
         endDate: endDate!,
-
         color: pickedColor,
         location: locationController.text,
-      );
+        authorId: AuthUtils.currentUserId);
 
-      context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
-      context.pop();
-    }
+    context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
+    context.pop();
   }
 
   @override
@@ -95,7 +104,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Widget _form() => Padding(
         padding: const EdgeInsets.only(right: 10, left: 10),
         child: Form(
-            key: formKey,
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -331,7 +340,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ),
       ],
     );
-  } 
+  }
 
   Widget _titleFromField() => Column(
         mainAxisSize: MainAxisSize.min,
@@ -355,6 +364,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   labelText: "Event Title",
                 ),
               ),
+              validator: (value) => Validators.eventTitleValidator(value),
             ),
           ),
         ],

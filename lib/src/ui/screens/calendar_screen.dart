@@ -1,15 +1,16 @@
+import 'package:LuxCal/core/theme/pallette.dart';
+import 'package:LuxCal/core/theme/typography.dart';
+import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
+import 'package:LuxCal/src/models/event_model.dart';
 import 'package:LuxCal/src/ui/widgets/calendar_widget.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
-import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/events_widget.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
-import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -56,27 +57,45 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Drawer _buildDrawer(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text(
-              'Settings',
-              style: TextStyle(
+      backgroundColor: AppPalette.jacarta,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ListTile(
+              leading: Icon(
+                Icons.exit_to_app,
                 color: Colors.white,
-                fontSize: 24,
+              ),
+              title: Text(
+                'Logout',
+                style: AppTypography.mainButton,
+              ),
+              onTap: () {
+                context.read<AuthBloc>().add(AuthLogoutRequested());
+                context.go('/login');
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ListTile(
+                leading: Icon(
+                  Icons.person_remove_outlined,
+                  color: Colors.white,
+                ),
+                title: Text(
+                  'Delete Account',
+                  style: AppTypography.mainButton,
+                ),
+                onTap: () {
+                  context.read<AuthBloc>().add(AuthLogoutRequested());
+                  context.go('/login');
+                },
               ),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () => Scaffold.of(context).openDrawer(),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -119,7 +138,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _calendar(BuildContext context) {
-    return CalendarWidget();
+    return const CalendarWidget();
   }
 
   Text _header() {

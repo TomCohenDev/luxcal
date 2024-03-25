@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   @override
@@ -46,15 +46,15 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, state) {
         return CustomScaffold(
           body: SingleChildScrollView(
-            child: SizedBox(
-              height: context.height,
-              width: context.width,
-              child: Stack(
-                children: [
-                  ..._backgroundCircles(),
-                  _body(),
-                ],
-              ),
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: context.height,
+                  width: context.width,
+                ),
+                ..._backgroundCircles(),
+                _body(),
+              ],
             ),
           ),
         );
@@ -95,9 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          spacer(50),
           _luxIcon(),
           spacer(20),
           _header(),
@@ -135,6 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
           context
               .read<AuthScreenCubit>()
               .userChanged(UserModel(email: emailController.text.trim()));
+          final isValid = _formKey.currentState!.validate();
+          if (!isValid) return;
+
           context.read<AuthScreenCubit>().logInWithCredentials();
         },
       ),
@@ -180,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _form() => Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
         children: [
           _emailFromField(),
@@ -201,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        validator: (value) => Validators.emailValidator(value),
+        validator: (value) => Validators.nameValidator(value),
       );
 
   Widget _passwordFormField() => CustomTextField(

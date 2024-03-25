@@ -7,10 +7,10 @@ class EventModel {
   final String? description;
   final DateTime startDate;
   final DateTime endDate;
-
   final String? location;
   final Color? color;
   final String? imageUrl;
+  final String authorId; // New field
 
   EventModel({
     required this.id,
@@ -21,6 +21,7 @@ class EventModel {
     this.location,
     required this.color,
     this.imageUrl,
+    required this.authorId, // New field
   });
 
   // Factory constructor to create an EventModel from a Firestore document
@@ -35,8 +36,10 @@ class EventModel {
       location: firestoreDoc['location'] as String?,
       color:
           firestoreDoc['color'] != null ? Color(firestoreDoc['color']) : null,
+      authorId: firestoreDoc['authorId'] as String, // New field
     );
   }
+
   // Convert an EventModel instance to a Map, for uploading to Firestore
   Map<String, dynamic> toFirestore() {
     return {
@@ -48,6 +51,7 @@ class EventModel {
       'endDate': Timestamp.fromDate(endDate),
       'location': location,
       'color': color?.value,
+      'authorId': authorId, // New field
     };
   }
 
@@ -60,6 +64,7 @@ class EventModel {
     String? location,
     Color? color,
     String? imageUrl,
+    String? authorId, // New field
   }) {
     return EventModel(
       id: id ?? this.id,
@@ -70,6 +75,7 @@ class EventModel {
       location: location ?? this.location,
       color: color ?? this.color,
       imageUrl: imageUrl ?? this.imageUrl,
+      authorId: authorId ?? this.authorId, // New field
     );
   }
 

@@ -25,32 +25,82 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController contactNameController = TextEditingController();
   final TextEditingController nicknameController =
       TextEditingController(text: AuthUtils.currentUser.nickName);
   final TextEditingController fullNameController =
       TextEditingController(text: AuthUtils.currentUser.fullName);
   Color selectedColor = AuthUtils.currentUser.nickNameColor ?? Colors.blue;
+  final TextEditingController contactNameController = TextEditingController();
+  List<UserModel> filteredContacts = [];
+  @override
+  void initState() {
+    super.initState();
+    // Listen to changes in the search bar and filter contacts accordingly
+    contactNameController.addListener(_filterContacts);
+  }
+
+  @override
+  void dispose() {
+    contactNameController
+        .dispose(); // Don't forget to dispose of the controller
+    nicknameController.dispose();
+    fullNameController.dispose();
+    super.dispose();
+  }
+
+  void _filterContacts() {
+    final query = contactNameController.text.toLowerCase();
+    final bloc = context.read<CalendarBloc>();
+    // Assuming your CalendarState has a 'contacts' list
+    final allContacts = bloc.state.contacts ?? [];
+    if (query.isEmpty) {
+      // If the search query is empty, display all contacts
+      setState(() {
+        filteredContacts = allContacts;
+      });
+    } else {
+      // Otherwise, filter contacts based on the query
+      setState(() {
+        filteredContacts = allContacts.where((contact) {
+          return contact.fullName!.toLowerCase().contains(query) ||
+              (contact.nickName?.toLowerCase().contains(query) ?? false) ||
+              contact.phoneNumber!.contains(query);
+        }).toList();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       body: SafeArea(
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            _buttonrow(context),
-            Column(
-              children: [
-                _header(),
-                spacer(20),
-                _searchBar(),
-                spacer(20),
-                _contactsList(),
-              ],
-            ),
-          ],
-        ),
+        child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: BlocBuilder<CalendarBloc, CalendarState>(
+                builder: (context, state) {
+              // Initialize filteredContacts with all contacts on state changes
+              // This assumes your state has a mechanism to indicate when contacts are ready/loaded
+              if (state.contacts != null &&
+                  contactNameController.text.isEmpty) {
+                filteredContacts = state.contacts!;
+              }
+
+              return Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  _buttonrow(context),
+                  Column(
+                    children: [
+                      _header(),
+                      spacer(20),
+                      _searchBar(),
+                      spacer(20),
+                      _contactsList(),
+                    ],
+                  ),
+                ],
+              );
+            })),
       ),
     );
   }
@@ -233,10 +283,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return BlocBuilder<CalendarBloc, CalendarState>(
       builder: (context, state) {
         return ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: state.contacts!.length,
+          itemCount: filteredContacts.length,
           itemBuilder: (context, index) {
-            return _contactTile(state.contacts![index]);
+            return _contactTile(filteredContacts[index]);
           },
         );
       },
@@ -244,15 +296,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _contactTile(UserModel contactModel) {
-    // You might want to dynamically assign colors or icons based on some property of the contactModel
     Color backgroundColor =
         contactModel.nickNameColor ?? Colors.blue; // example color
-    String? nickname =
-        contactModel.nickName; // assuming the UserModel has a nickname field
-
-    // You might have a function to choose the color and icon based on the contactModel
-    // backgroundColor = _getColorForContact(contactModel);
-    // iconData = _getIconForContact(contactModel);
+    String? nickname = contactModel.nickName;
 
     return Container(
       padding: EdgeInsets.all(10), // add padding

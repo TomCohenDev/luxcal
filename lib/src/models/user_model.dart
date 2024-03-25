@@ -37,14 +37,14 @@ class UserModel extends Equatable {
     );
   }
 
-  factory UserModel.fromFirestore(Map<String, dynamic> firestoreDoc) {
+  factory UserModel.fromFirestore(DocumentSnapshot snap) {
+    var firestoreDoc = snap.data() as Map<String, dynamic>? ?? {};
     return UserModel(
-      uid: firestoreDoc['id'],
-      email: firestoreDoc['email'],
-      fullName: firestoreDoc['fullName'],
-      phoneNumber: firestoreDoc['phoneNumber'],
+      uid: snap.id,
+      email: firestoreDoc['email'] ?? '',
+      fullName: firestoreDoc['fullName'] ?? '',
+      phoneNumber: firestoreDoc['phoneNumber'] ?? '',
       nickName: firestoreDoc['nickName'],
-      // Convert the Firestore color (usually stored as an int) back to a Color
       nickNameColor: firestoreDoc['nickNameColor'] != null
           ? Color(firestoreDoc['nickNameColor'])
           : null,
@@ -57,7 +57,6 @@ class UserModel extends Equatable {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'nickName': nickName,
-      // Store the color as an int to Firestore
       'nickNameColor': nickNameColor?.value,
     };
   }

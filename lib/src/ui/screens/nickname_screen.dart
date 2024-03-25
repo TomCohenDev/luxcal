@@ -133,8 +133,9 @@ class _NicknameScreenState extends State<NicknameScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         ),
         onPressed: () {
-          AuthUtils.currentUser.nickName = nicknameController.text;
-          context.read<AuthBloc>().add(UserUpdated(AuthUtils.currentUser));
+          final updatedUser = AuthUtils.currentUser.copyWith(
+              nickNameColor: selectedColor, nickName: nicknameController.text);
+          context.read<AuthBloc>().add(UserUpdated(updatedUser));
           context.go('/calendar');
         },
       ),

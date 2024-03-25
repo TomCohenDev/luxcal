@@ -15,6 +15,9 @@ abstract class BaseAuthRepository {
   });
 
   Future<void> signOut();
+
+    Future<void> deleteAuthUser();
+
 }
 
 class AuthRepository extends BaseAuthRepository {
@@ -40,15 +43,14 @@ class AuthRepository extends BaseAuthRepository {
         password: password,
       );
       final authUser = userCredential.user;
-
+      print("Auth user created");
       await _userRepository.createUser(
         userModel.copyWith(
           uid: authUser!.uid,
           email: userModel.email,
         ),
       );
-
-      return authUser;
+      print("Database user created");
     } on auth.FirebaseAuthException catch (e) {
       print(e.toString());
     }
@@ -77,4 +79,23 @@ class AuthRepository extends BaseAuthRepository {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
+ Future<void> deleteAuthUser() async {
+    try {
+      final currentUser = _firebaseAuth.currentUser;
+
+      if (currentUser != null) {
+     
+        await _userRepository.deleteUser(UserModel(uid: currentUser.uid));
+
+        await currentUser.delete();
+        print("Auth user deleted");
+      }
+    } on auth.FirebaseAuthException catch (e) {
+      print("Failed to delete auth user: ${e.message}");
+      throw e; // Rethrow the exception to handle it outside this method if needed
+    }
+  }
 }
+
+

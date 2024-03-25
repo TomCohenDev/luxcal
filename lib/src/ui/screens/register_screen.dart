@@ -44,20 +44,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthScreenCubit, AuthScreenState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state.status == AuthScreenStatus.success) {
+        if (state.status == AuthStatus.authenticated) {
           context.go('/nickname');
         }
       },
       builder: (context, state) {
-        return CustomScaffold(
-          body: SingleChildScrollView(
-            child: SizedBox(
-              height: context.height,
-              width: context.width,
+        return SafeArea(
+          child: CustomScaffold(
+            body: SingleChildScrollView(
               child: Stack(
                 children: [
+                  SizedBox(
+                    height: context.height,
+                    width: context.width,
+                  ),
                   ..._backgroundCircles(),
                   _body(context),
                 ],
@@ -88,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
       Positioned(
-        bottom: -35,
+        bottom: -20,
         right: -40,
         child: CircleAvatar(
           backgroundColor: Color(0xffFF8FBB),
@@ -120,13 +122,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _button(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: context.width * 0.7,
       child: ElevatedButton(
-        child: Text(
-          'Create Account',
-          style: AppTypography.buttonText,
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.purple,
           shape: RoundedRectangleBorder(
@@ -135,6 +133,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         ),
         onPressed: () {
+          final isValid = _formKey.currentState!.validate();
+          if (!isValid) return;
+
           UserModel userModel = UserModel(
             email: emailController.text.trim(),
             fullName: nameController.text.trim(),
@@ -145,6 +146,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               .read<AuthScreenCubit>()
               .signUpWithCredentials(userModel, passwordController.text);
         },
+        child: Text(
+          'Create Account',
+          style: AppTypography.buttonText,
+        ),
       ),
     );
   }
@@ -153,19 +158,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Text('Create Account',
         style: GoogleFonts.getFont("Poppins",
             fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold));
-  }
-
-  Align _forgotPass() {
-    return Align(
-      alignment: const Alignment(0.8, 0),
-      child: TextButton(
-        child: Text(
-          'Forgot Password?',
-          style: AppTypography.forgotPassTxt,
-        ),
-        onPressed: () {},
-      ),
-    );
   }
 
   Widget _login() {
@@ -215,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
-        validator: (value) => Validators.emailValidator(value),
+        validator: (value) => Validators.nameValidator(value),
       );
 
   Widget _emailFromField() => CustomTextField2(
@@ -258,7 +250,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Image.asset('assets/icons/key.png')),
           ),
         ),
-        validator: (value) => Validators.passwordValidator(value),
+        validator: (value) =>
+            Validators.ConfirmPasswordValidator(passwordController.text, value),
       );
 
   Widget _phoneNumberFormField() => CustomTextField2(
@@ -273,6 +266,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ),
-        validator: (value) => Validators.emailValidator(value),
+        validator: (value) => Validators.phoneValidator(value),
       );
 }

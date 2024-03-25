@@ -96,9 +96,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   // Retrieves the contacts from Firestore and updates the state.
   Future<List<UserModel>> _getContacts() async {
     final snapshot = await _firestore.collection('users').get();
-    return snapshot.docs
-        .map((doc) => UserModel.fromFirestore(doc.data()))
-        .toList();
+    return snapshot.docs.map((doc) => UserModel.fromFirestore(doc)).toList();
   }
 
   // Retrieves the events from Firestore and updates the state.

@@ -23,7 +23,6 @@ class AuthLogoutRequested extends AuthEvent {
   List<Object> get props => [];
 }
 
-
 class UserUpdated extends AuthEvent {
   final UserModel userModel;
 
@@ -31,4 +30,9 @@ class UserUpdated extends AuthEvent {
 
   @override
   List<Object> get props => [userModel];
+}
+
+class DeleteUserRequest extends AuthEvent {
+  @override
+  List<Object> get props => [];
 }

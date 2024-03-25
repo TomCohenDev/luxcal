@@ -1,3 +1,5 @@
+import 'package:LuxCal/src/models/event_model.dart';
+import 'package:LuxCal/src/models/news_model.dart';
 import 'package:LuxCal/src/ui/screens/add_event_screen.dart';
 import 'package:LuxCal/src/ui/screens/add_news_screen.dart';
 import 'package:LuxCal/src/ui/screens/auth_screen.dart';
@@ -6,6 +8,8 @@ import 'package:LuxCal/src/ui/screens/login_screen.dart';
 import 'package:LuxCal/src/ui/screens/nickname_screen.dart';
 import 'package:LuxCal/src/ui/screens/profile_screen.dart';
 import 'package:LuxCal/src/ui/screens/register_screen.dart';
+import 'package:LuxCal/src/ui/screens/selected_event_screen.dart';
+import 'package:LuxCal/src/ui/screens/selected_news_screen.dart';
 import 'package:LuxCal/src/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -51,6 +55,16 @@ GoRouter router = GoRouter(
     GoRoute(
       path: '/addNews',
       builder: (context, state) => AddNewsScreen(),
+    ),
+    GoRoute(
+      path: '/selectedNews',
+      builder: (context, state) =>
+          SelectedNewsScreen(newsModel: state.extra as NewsModel),
+    ),
+    GoRoute(
+      path: '/selectedEvent',
+      builder: (context, state) =>
+          SelectedEventScreen(eventModel: state.extra as EventModel),
     ),
   ],
 );
