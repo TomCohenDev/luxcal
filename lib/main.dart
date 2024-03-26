@@ -6,6 +6,7 @@ import 'package:LuxCal/src/blocs/auth_screen/auth_screen_cubit.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/repositories/auth_repo.dart';
 import 'package:LuxCal/src/repositories/user_repo.dart';
+import 'package:LuxCal/src/services/fcm.dart';
 import 'package:LuxCal/src/utils/messenger.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +34,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // await FCM().init();
   await GetStorage.init();
   // await Notifications().initNotifications();
   setupLocator();

@@ -1,4 +1,5 @@
 import 'package:LuxCal/src/models/user_model.dart';
+import 'package:LuxCal/src/services/fcm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class BaseUserRepository {
@@ -40,12 +41,13 @@ class UserRepository extends BaseUserRepository {
       return;
     }
     print('creating new user');
+    final fcmToken = await FCM().getNotificationToken();
+    final userWithToken = user.copyWith(fcmToken: fcmToken);
     return await _firebaseFirestore
         .collection('users')
         .doc(user.uid)
-        .set(user.toDocument());
+        .set(userWithToken.toDocument());
   }
-
   @override
   Future<void> updateUser(UserModel user) async {
     return await _firebaseFirestore

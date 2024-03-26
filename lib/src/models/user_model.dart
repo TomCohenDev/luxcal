@@ -9,6 +9,7 @@ class UserModel extends Equatable {
   String? phoneNumber;
   String? nickName;
   Color? nickNameColor;
+  String? fcmToken;
 
   UserModel({
     this.uid,
@@ -17,6 +18,7 @@ class UserModel extends Equatable {
     this.phoneNumber,
     this.nickName,
     this.nickNameColor,
+    this.fcmToken,
   });
 
   UserModel copyWith({
@@ -26,6 +28,7 @@ class UserModel extends Equatable {
     String? phoneNumber,
     String? nickName,
     Color? nickNameColor,
+    String? fcmToken,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -34,6 +37,7 @@ class UserModel extends Equatable {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       nickName: nickName ?? this.nickName,
       nickNameColor: nickNameColor ?? this.nickNameColor,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 
@@ -42,6 +46,7 @@ class UserModel extends Equatable {
     return UserModel(
       uid: snap.id,
       email: firestoreDoc['email'] ?? '',
+      fcmToken: firestoreDoc['fcmToken'],
       fullName: firestoreDoc['fullName'] ?? '',
       phoneNumber: firestoreDoc['phoneNumber'] ?? '',
       nickName: firestoreDoc['nickName'],
@@ -58,16 +63,11 @@ class UserModel extends Equatable {
       'phoneNumber': phoneNumber,
       'nickName': nickName,
       'nickNameColor': nickNameColor?.value,
+      'fcmToken': fcmToken,
     };
   }
 
   @override
-  List<Object?> get props => [
-        uid,
-        email,
-        fullName,
-        phoneNumber,
-        nickName,
-        nickNameColor,
-      ];
+  List<Object?> get props =>
+      [uid, email, fullName, phoneNumber, nickName, nickNameColor, fcmToken];
 }

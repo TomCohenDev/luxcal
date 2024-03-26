@@ -36,7 +36,6 @@ dependencies:
   google_fonts: ^4.0.3
   font_awesome_flutter: ^10.4.0
   change_app_package_name: ^1.1.0
-  flutter_launcher_icons: ^0.13.0
   permission_handler: ^10.2.0
   path: ^1.8.3
   path_provider: ^2.0.15
@@ -52,7 +51,7 @@ dependencies:
   firebase_auth: ^4.4.2
   firebase_storage: ^11.1.1
   firebase_crashlytics: ^3.1.1
-  firebase_messaging: ^14.6.8
+  firebase_messaging: ^14.7.19
 
   flutter_localization: ^0.1.10
 
@@ -87,19 +86,19 @@ dev_dependencies:
   built_collection: ^5.1.1
   build_runner: ^2.3.3
   built_value_generator: ^8.4.4
+  flutter_launcher_icons: ^0.13.0
+
   
 
 
 
 
-# flutter_icons:
-#   android: "launcher_icon"
-#   ios: true
-#   remove_alpha_ios: true
-#   image_path: "assets/icon/launcher_icon.png"
-#   adaptive_icon_background: "assets/icon/launcher_icon_background.png"
-#   adaptive_icon_foreground: "assets/icon/launcher_icon_foreground.png"
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
 
 # For information on the generic Dart part of this file, see the
