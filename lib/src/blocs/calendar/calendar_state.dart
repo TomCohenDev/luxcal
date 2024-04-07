@@ -14,6 +14,7 @@ class CalendarState extends Equatable {
   final String? errorMessage;
   final CalendarTabs tab;
   final List<UserModel>? contacts;
+  final String? hebMonth;
 
   const CalendarState({
     this.status = CalendarStatus.initial,
@@ -25,6 +26,7 @@ class CalendarState extends Equatable {
     this.errorMessage,
     this.tab = CalendarTabs.upcoming,
     this.contacts,
+    this.hebMonth,
   });
 
   factory CalendarState.initial() {
@@ -37,6 +39,7 @@ class CalendarState extends Equatable {
       news: [],
       events: [],
       contacts: [],
+      hebMonth: "",
     );
   }
 
@@ -50,8 +53,10 @@ class CalendarState extends Equatable {
     String? errorMessage,
     CalendarTabs? tab,
     List<UserModel>? contacts,
+    String? hebMonth,
   }) {
     return CalendarState(
+      hebMonth: hebMonth ?? this.hebMonth,
       status: status ?? this.status,
       events: events ?? this.events,
       news: news ?? this.news,

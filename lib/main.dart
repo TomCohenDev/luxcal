@@ -34,7 +34,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // await FCM().init();
+  await FCM().init();
   await GetStorage.init();
   // await Notifications().initNotifications();
   setupLocator();

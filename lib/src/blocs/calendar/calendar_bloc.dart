@@ -128,15 +128,20 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           .get()
           .then(
         (value) {
-          value.docs.first.reference.delete();
+          for (var doc in value.docs) {
+            doc.reference.delete();
+          }
         },
       );
 
-      // Fetch the updated list of events
-      List<EventModel> updatedEvents = await _getEvents();
+      // Assuming `state.events` is a List<EventModel>, remove the event with eventId from this list
+      // Note: This requires EventModel to be comparable (e.g., override equals/hashCode or use a unique identifier for comparison)
+      final List<EventModel> remainingEvents = state.events != null
+          ? state.events!.where((e) => e.id != event.eventId).toList()
+          : [];
 
-      // Emit the new state with the updated events list
-      emit(state.copyWith(events: updatedEvents));
+      // Emit the updated state with the remaining events
+      emit(state.copyWith(events: remainingEvents));
     } catch (error) {
       print("Failed to delete event: $error");
       // Optionally, handle the error by emitting a failure state or showing a message
@@ -195,19 +200,31 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
             event.image!, 'events/${event.event.id}/image.jpg');
       }
 
-      await _firestore
-          .collection('events')
-          .add(event.event.copyWith(imageUrl: imageUrl).toFirestore());
-      List<EventModel> updatedEvents = await _getEvents();
+      // Create a copy of the event with the imageUrl, if it exists
+      final newEvent = event.event.copyWith(imageUrl: imageUrl);
+
+      // Add the event to Firestore
+      await _firestore.collection('events').add(newEvent.toFirestore());
+
+      // Check if state.events is null. If so, initialize an empty list; otherwise, use the existing list.
+      final List<EventModel> currentEvents = state.events ?? [];
+
+      // Append the new event to the list of current events.
+      final List<EventModel> updatedEvents =
+          List<EventModel>.from(currentEvents)..add(newEvent);
+
+      // Emit the updated state with the new list of events
       emit(state.copyWith(events: updatedEvents));
     } catch (error) {
       print(error);
     }
   }
 
-  void _onDaySelected(DaySelected event, Emitter<CalendarState> emit) {
+  void _onDaySelected(DaySelected event, Emitter<CalendarState> emit) async {
     emit(state.copyWith(
-        selectedDay: event.selectedDay, focusedDay: event.focusedDay));
+      selectedDay: event.selectedDay,
+      focusedDay: event.focusedDay,
+    ));
   }
 
   void _onYearSelected(YearSelected event, Emitter<CalendarState> emit) {

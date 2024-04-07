@@ -1,12 +1,14 @@
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/models/event_model.dart';
+import 'package:LuxCal/src/services/api/fetch_jew_holidays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
+import 'package:kosher_dart/kosher_dart.dart';
 
 class CalendarWidget extends StatelessWidget {
   const CalendarWidget({Key? key}) : super(key: key);
@@ -92,14 +94,14 @@ class CalendarWidget extends StatelessWidget {
                   return events[normalizedDate] ?? [];
                 },
                 calendarStyle: _calendarStyle(),
-                headerStyle: _headerStyle(),
+                headerStyle: _headerStyle(state),
                 daysOfWeekStyle: _dayOfTheWeekStyle(),
                 firstDay: DateTime(DateTime.now().year - 100, 1),
                 lastDay: DateTime(DateTime.now().year + 100, 1),
                 focusedDay: state.focusedDay,
                 selectedDayPredicate: (day) =>
                     isSameDay(day, state.selectedDay),
-                onDaySelected: (selectedDay, focusedDay) {
+                onDaySelected: (selectedDay, focusedDay) async {
                   BlocProvider.of<CalendarBloc>(context).add(DaySelected(
                       selectedDay: selectedDay, focusedDay: focusedDay));
                 },
@@ -134,11 +136,20 @@ class CalendarWidget extends StatelessWidget {
         ));
   }
 
-  HeaderStyle _headerStyle() => HeaderStyle(
+  HeaderStyle _headerStyle(CalendarState state) => HeaderStyle(
         titleCentered: true,
         formatButtonVisible: false,
-        titleTextFormatter: (date, locale) =>
-            DateFormat.yMMMM(locale).format(date),
+        titleTextFormatter: (date, locale) {
+          String hebMonthName = '';
+          JewishDate jewishDate = JewishDate.fromDateTime(date);
+          print(jewishDate);
+          var parts = jewishDate.toString().split(' ');
+
+          if (parts.length >= 3) {
+            hebMonthName = parts[1];
+          }
+          return "$hebMonthName  |  ${DateFormat.yMMMM(locale).format(date)}";
+        },
         titleTextStyle: AppTypography.calendarTitle,
         leftChevronIcon: Container(
             decoration: BoxDecoration(
@@ -179,45 +190,30 @@ class CalendarWidget extends StatelessWidget {
       );
 
   CalendarStyle _calendarStyle() => CalendarStyle(
-      outsideDaysVisible: true,
-      weekendTextStyle: AppTypography.calendarDays,
-      holidayTextStyle: AppTypography.calendarDays,
-      todayTextStyle: AppTypography.calendarDays,
-      defaultTextStyle: AppTypography.calendarDays,
-      selectedTextStyle: AppTypography.calendarDays,
-      selectedDecoration:
-          BoxDecoration(color: AppPalette.teal, shape: BoxShape.circle),
-      todayDecoration: BoxDecoration(
-        color: const Color.fromARGB(255, 77, 70, 116),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      markerDecoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-      )
-      // defaultDecoration: BoxDecoration(
-      //   shape: BoxShape.rectangle,
-      //   borderRadius: BorderRadius.circular(8.0),
-      // ),
-      // weekendDecoration: BoxDecoration(
-      //   shape: BoxShape.rectangle,
-      //   borderRadius: BorderRadius.circular(8.0),
-      // ),
-      // markerDecoration: BoxDecoration(
-      //   color: Colors.brown,
-      //   shape: BoxShape.circle,
-      // ),
-      // rowDecoration: BoxDecoration(
-      //     // Add any additional row styling here
-      //     ),
+        outsideDaysVisible: true,
+        weekendTextStyle: AppTypography.calendarDays,
+        holidayTextStyle: AppTypography.calendarDays,
+        todayTextStyle: AppTypography.calendarDays,
+        defaultTextStyle: AppTypography.calendarDays,
+        selectedTextStyle: AppTypography.calendarDays,
+        selectedDecoration:
+            BoxDecoration(color: AppPalette.teal, shape: BoxShape.circle),
+        todayDecoration: BoxDecoration(
+          color: const Color.fromARGB(255, 77, 70, 116),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        markerDecoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
       );
   DaysOfWeekStyle _dayOfTheWeekStyle() => DaysOfWeekStyle(
         weekdayStyle: AppTypography.dayoftheweek,

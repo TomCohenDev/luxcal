@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthScreenCubit, AuthScreenState>(
       listener: (context, state) {
         if (state.status == AuthScreenStatus.success) {
-          context.go('/nickname');
+          context.go('/splash');
         }
       },
       builder: (context, state) {
