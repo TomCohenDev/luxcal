@@ -64,7 +64,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       UpdateEvent event, Emitter<CalendarState> emit) async {
     try {
       String? pickedImage;
-
+      print(pickedImage);
       if (event.pickedImage != null) {
         pickedImage = await _uploadImageToStorage(
             event.pickedImage!, 'event/${event.updatedEvent.id}/image.jpg');
@@ -81,8 +81,12 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       } else {
         await docRef.update(event.updatedEvent.toFirestore());
       }
-      List<EventModel> updatedEvents = await _getEvents();
-      emit(state.copyWith(events: updatedEvents));
+
+      // List<EventModel> updatedEvents = await _getEvents();
+
+      add(InilaizeCalendar());
+
+      // emit(state.copyWith(events: updatedEvents));
     } catch (error) {
       print("Failed to update event: $error");
     }

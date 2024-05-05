@@ -377,10 +377,14 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.eventModel.imageUrl != null)
+          if (widget.eventModel.imageUrl != null && pickedImage == null)
             ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: Image.network(widget.eventModel.imageUrl!)),
+          if (pickedImage != null)
+            ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Image.asset(pickedImage!.path)),
           spacer(10),
           Stack(
             children: [
@@ -522,7 +526,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                 },
                 child: Icon(
                   Icons.delete,
-                  color: Colors.red,
+                  color: Colors.black,
                   size: 30,
                 ),
               ),
