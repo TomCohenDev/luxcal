@@ -32,9 +32,15 @@ class _EventsWidgetState extends State<EventsWidget> {
   List<EventModel> filterAndSortUpcomingEvents(List<EventModel>? events) {
     if (events == null) return [];
     final now = DateTime.now();
-    // Filter events to get only those that are upcoming
-    final upcomingEvents =
-        events.where((event) => event.startDate.isAfter(now)).toList();
+    final twoWeeksFromNow = now.add(Duration(days: 14));
+
+    // Filter events to get only those that are upcoming and within the next 2 weeks
+    final upcomingEvents = events
+        .where((event) =>
+            event.startDate.isAfter(now) &&
+            event.startDate.isBefore(twoWeeksFromNow))
+        .toList();
+
     // Sort the filtered events by startDate
     upcomingEvents.sort((a, b) => a.startDate.compareTo(b.startDate));
     return upcomingEvents;

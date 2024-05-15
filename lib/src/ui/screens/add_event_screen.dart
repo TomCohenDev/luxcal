@@ -35,6 +35,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final TextEditingController descriptionController = TextEditingController();
   DateTime? startDate;
   DateTime? endDate;
+  String recurrence = "One Time";
+
+  final List<String> recurrenceOptions = [
+    "One Time",
+    "Every Day",
+    "Once a Week",
+    "Once a Month",
+    "Once a Year"
+  ];
 
   Color pickedColor = Colors.red;
   XFile? pickedImage;
@@ -57,16 +66,18 @@ class _AddEventScreenState extends State<AddEventScreen> {
       return;
     }
     final EventModel newEvent = EventModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: titleController.text,
-        description: descriptionController.text,
-        startDate: startDate!,
-        endDate: endDate!,
-        color: pickedColor,
-        location: locationController.text,
-        authorName: AuthUtils.currentUser.fullName!,
-        authorNickname: AuthUtils.currentUser.nickName!,
-        authorId: AuthUtils.currentUserId);
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: titleController.text,
+      description: descriptionController.text,
+      startDate: startDate!,
+      endDate: endDate!,
+      color: pickedColor,
+      location: locationController.text,
+      authorName: AuthUtils.currentUser.fullName!,
+      authorNickname: AuthUtils.currentUser.nickName!,
+      authorId: AuthUtils.currentUserId,
+      recurrence: recurrence,
+    );
 
     context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
     context.pop();
@@ -109,7 +120,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   Widget _form() => Padding(
-        padding: const EdgeInsets.only(right: 10, left: 10),
+        padding: const EdgeInsets.only(right: 10, left: 10, bottom: 100),
         child: Form(
             key: _formKey,
             child: Column(
@@ -345,6 +356,63 @@ class _AddEventScreenState extends State<AddEventScreen> {
             ),
           ],
         ),
+        spacer(20),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                "Recurrence:",
+                style: AppTypography.textFieldText.copyWith(fontSize: 16),
+              ),
+            ),
+            spacerWidth(10),
+            ElevatedContainerCard(
+              height: 50,
+              width: 200,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: recurrence,
+                  items: recurrenceOptions.map((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(
+                        option,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      recurrence = newValue!;
+                    });
+                  },
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                  dropdownColor: AppPalette.jacarta,
+                  icon: Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.blue,
+                  ),
+                  iconSize: 30,
+                  underline: Container(
+                    height: 2,
+                    color: Colors.transparent,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        spacer(10),
       ],
     );
   }
@@ -408,6 +476,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (pickedImage != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Image.file(
+                File(pickedImage!.path),
+              ),
+            ),
+            spacer(20),
+          ],
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
@@ -438,24 +515,25 @@ class _AddEventScreenState extends State<AddEventScreen> {
               Align(
                 alignment: Alignment(0.95, 1),
                 child: IconButton(
-                    onPressed: () async {
-                      final ImagePicker _picker = ImagePicker();
-                      // Pick an image from the gallery (or use .pickImage(source: ImageSource.camera) for taking a new photo)
-                      final XFile? image =
-                          await _picker.pickImage(source: ImageSource.gallery);
+                  onPressed: () async {
+                    final ImagePicker _picker = ImagePicker();
+                    // Pick an image from the gallery (or use .pickImage(source: ImageSource.camera) for taking a new photo)
+                    final XFile? image =
+                        await _picker.pickImage(source: ImageSource.gallery);
 
-                      // If an image is picked, update the state with the new image
-                      if (image != null) {
-                        setState(() {
-                          pickedImage = image;
-                        });
-                      }
-                    },
-                    icon: Icon(
-                      Icons.image,
-                      color: Color.fromARGB(211, 7, 197, 255),
-                      size: 40,
-                    )),
+                    // If an image is picked, update the state with the new image
+                    if (image != null) {
+                      setState(() {
+                        pickedImage = image;
+                      });
+                    }
+                  },
+                  icon: Icon(
+                    Icons.image,
+                    color: Color.fromARGB(211, 7, 197, 255),
+                    size: 40,
+                  ),
+                ),
               ),
             ],
           ),

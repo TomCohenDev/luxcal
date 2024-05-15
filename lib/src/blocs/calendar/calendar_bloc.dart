@@ -239,24 +239,101 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     emit(state.copyWith(tab: event.tab));
   }
 
-  FutureOr<void> _initialzeCalendar(
+  void _initialzeCalendar(
       InilaizeCalendar event, Emitter<CalendarState> emit) async {
+    print("object");
     emit(state.copyWith(status: CalendarStatus.loadingInfo));
     final contacts = await _getContacts();
     final existingEvents = await _getEvents(); // Events from Firestore
+
+    // Generate occurrences for each event and gather them into a new list
+    final List<EventModel> allEventsWithOccurrences = [];
+    for (var event in existingEvents) {
+      final occurrences =
+          generateMonthlyOccurrences(event, DateTime.now().year);
+      allEventsWithOccurrences.addAll(occurrences);
+    }
+
     final currentYear = DateTime.now().year;
     gottenYears.add(currentYear);
     final holidayEvents = await fetchHolidays(
         currentYear); // Fetch holiday events for the current year
     final news = await _getNews(); // Fetch news
-    final allEvents = List<EventModel>.from(existingEvents)
+
+    // Combine all events and occurrences
+    final allEvents = List<EventModel>.from(allEventsWithOccurrences)
       ..addAll(holidayEvents);
+
     emit(state.copyWith(
       contacts: contacts,
       events: allEvents,
       news: news,
       status: CalendarStatus.loaded,
     ));
+  }
+
+  List<EventModel> generateMonthlyOccurrences(EventModel event, int year) {
+    List<EventModel> occurrences = [];
+    DateTime startDate = event.startDate;
+    DateTime endDate = event.endDate;
+
+    // Add the original event if it falls within the specified month
+    if (startDate.year == year) {
+      occurrences.add(event);
+    }
+
+    switch (event.recurrence) {
+      case 'Every Day':
+        while (startDate.year == year) {
+          startDate = startDate.add(Duration(days: 1));
+          endDate = endDate.add(Duration(days: 1));
+          if (startDate.year == year) {
+            occurrences
+                .add(event.copyWith(startDate: startDate, endDate: endDate));
+          }
+        }
+        break;
+
+      case 'Once a Week':
+        while (startDate.year == year) {
+          startDate = startDate.add(Duration(days: 7));
+          endDate = endDate.add(Duration(days: 7));
+          if (startDate.year == year) {
+            occurrences
+                .add(event.copyWith(startDate: startDate, endDate: endDate));
+          }
+        }
+        break;
+
+      case 'Once a Month':
+        while (startDate.year == year) {
+          startDate =
+              DateTime(startDate.year, startDate.month + 1, startDate.day);
+          endDate = DateTime(endDate.year, endDate.month + 1, endDate.day);
+          if (startDate.year == year) {
+            occurrences
+                .add(event.copyWith(startDate: startDate, endDate: endDate));
+          }
+        }
+        break;
+
+      case 'Once a Year':
+        while (startDate.year == year) {
+          startDate =
+              DateTime(startDate.year + 1, startDate.month, startDate.day);
+          endDate = DateTime(endDate.year + 1, endDate.month, endDate.day);
+          if (startDate.year == year) {
+            occurrences
+                .add(event.copyWith(startDate: startDate, endDate: endDate));
+          }
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return occurrences;
   }
 
   // Retrieves the contacts from Firestore and updates the state.

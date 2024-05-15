@@ -13,20 +13,21 @@ class EventModel {
   final String? authorId;
   final String? authorName; // New field for author name
   final String? authorNickname; // New field for author nickname
+  final String? recurrence;
 
-  EventModel({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.startDate,
-    required this.endDate,
-    this.location,
-    required this.color,
-    this.imageUrl,
-    this.authorId,
-    this.authorName, // New field
-    this.authorNickname, // New field
-  });
+  EventModel(
+      {required this.id,
+      required this.title,
+      this.description,
+      required this.startDate,
+      required this.endDate,
+      this.location,
+      required this.color,
+      this.imageUrl,
+      this.authorId,
+      this.authorName, // New field
+      this.authorNickname, // New field
+      this.recurrence});
 
   // Factory constructor to create an EventModel from a Firestore document
   factory EventModel.fromFirestore(Map<String, dynamic> firestoreDoc) {
@@ -43,6 +44,7 @@ class EventModel {
       authorId: firestoreDoc['authorId'] as String,
       authorName: firestoreDoc['authorName'] as String, // New field
       authorNickname: firestoreDoc['authorNickname'] as String, // New field
+      recurrence: (firestoreDoc['recurrence'] ?? "") as String,
     );
   }
 
@@ -54,6 +56,7 @@ class EventModel {
       startDate: DateTime.parse(json['date']),
       endDate: DateTime.parse(json['date']),
       color: Color.fromARGB(255, 7, 85, 255),
+      recurrence: json['recurrence'],
     );
   }
 
@@ -71,6 +74,7 @@ class EventModel {
       'authorId': authorId,
       'authorName': authorName, // New field
       'authorNickname': authorNickname, // New field
+      'recurrence': recurrence,
     };
   }
 
@@ -99,6 +103,7 @@ class EventModel {
       authorId: authorId ?? this.authorId,
       authorName: authorName ?? this.authorName,
       authorNickname: authorNickname ?? this.authorNickname,
+      recurrence: recurrence ?? this.recurrence,
     );
   }
 
