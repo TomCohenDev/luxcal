@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
+import 'package:LuxCal/main.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/models/event_model.dart';
+import 'package:LuxCal/src/ui/screens/splash_screen.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
@@ -81,6 +83,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
     context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
     context.pop();
+    RestartWidget.restartApp(context);
+    context.go('/calendar');
+
+    // context.go('/splash');
   }
 
   @override
