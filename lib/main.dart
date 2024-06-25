@@ -35,9 +35,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await Future.delayed(Duration(seconds: 1));
-  await FCM().init();
+  await FCM().getNotificationPermissions();
   await GetStorage.init();
-  // await Notifications().initNotifications();
   setupLocator();
 
   runApp(RestartWidget(child: const MyApp()));

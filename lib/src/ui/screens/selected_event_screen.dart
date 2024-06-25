@@ -1,5 +1,5 @@
+import 'dart:io';
 import 'dart:math';
-
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
@@ -13,6 +13,8 @@ import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -20,6 +22,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class SelectedEventScreen extends StatefulWidget {
   final EventModel eventModel;
@@ -93,16 +96,23 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
             alignment: Alignment.topCenter,
             children: [
               _buttonrow(context),
-              IgnorePointer(
-                ignoring: !isAuther(),
-                child: Column(
-                  children: [
-                    _header(widget.eventModel.title!),
-                    spacer(20),
-                    _form(),
-                    spacer(20),
-                  ],
-                ),
+              Column(
+                children: [
+                  IgnorePointer(
+                    ignoring: !isAuther(),
+                    child: Column(
+                      children: [
+                        _header(widget.eventModel.title!),
+                        spacer(20),
+                        _form(),
+                        spacer(20),
+                      ],
+                    ),
+                  ),
+
+                  _imagePickerButton(), // Add this line
+                  _viewGalleryButton(), // Add this line
+                ],
               ),
             ],
           ),
@@ -432,6 +442,80 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
           ),
         ],
       );
+
+  Widget _imagePickerButton() {
+    return isAuther()
+        ? ElevatedButton(
+            onPressed: () async {
+              final ImagePicker _picker = ImagePicker();
+              // Pick multiple images from the gallery
+              final List<XFile>? images = await _picker.pickMultiImage();
+
+              // If images are picked, handle the upload
+              if (images != null && images.isNotEmpty) {
+                await _uploadImagesToFirebase(widget.eventModel.id, images);
+              }
+            },
+            child: Text("Add Photos"),
+          )
+        : Container();
+  }
+
+  Future<void> _uploadImagesToFirebase(
+      String eventId, List<XFile> images) async {
+    try {
+      for (var image in images) {
+        String fileName = path.basename(image.path);
+        Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('event_albums/$eventId/$fileName');
+
+        UploadTask uploadTask = storageRef.putFile(File(image.path));
+
+        // Monitor the upload progress
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          print(
+              'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+        }, onError: (e) {
+          // Handle error
+          print(uploadTask.snapshot);
+          if (e.code == 'permission-denied') {
+            print('User does not have permission to upload to this reference.');
+          }
+        });
+
+        // Wait until the upload completes
+        await uploadTask;
+
+        // Get the download URL
+        final downloadURL = await storageRef.getDownloadURL();
+        print('Download URL: $downloadURL');
+
+        // Save the download URL and path to Firestore
+        await FirebaseFirestore.instance
+            .collection('events')
+            .doc(eventId)
+            .collection('images')
+            .add({'path': storageRef.fullPath, 'url': downloadURL});
+      }
+    } catch (e) {
+      print('Error uploading images: $e');
+    }
+  }
+
+  Widget _viewGalleryButton() {
+    final bool isMaker = AuthUtils.currentUserId ==
+        widget.eventModel
+            .authorId; // or however you determine if the user is the maker
+    return ElevatedButton(
+      onPressed: () {
+        print(widget.eventModel.id);
+        // Navigate to the gallery page
+        context.push('/event/${widget.eventModel.id}/gallery?isMaker=$isMaker');
+      },
+      child: Text("View Gallery"),
+    );
+  }
 
   Text _header(String title) {
     return Text(title,

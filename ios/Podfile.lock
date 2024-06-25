@@ -1246,6 +1246,8 @@ PODS:
   - RecaptchaInterop (100.0.0)
   - restart_app (0.0.1):
     - Flutter
+  - saver_gallery (0.0.1):
+    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -1262,6 +1264,7 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - restart_app (from `.symlinks/plugins/restart_app/ios`)
+  - saver_gallery (from `.symlinks/plugins/saver_gallery/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -1321,6 +1324,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   restart_app:
     :path: ".symlinks/plugins/restart_app/ios"
+  saver_gallery:
+    :path: ".symlinks/plugins/saver_gallery/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
@@ -1366,6 +1371,7 @@ SPEC CHECKSUMS:
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   restart_app: 806659942bf932f6ce51c5372f91ce5e81c8c14a
+  saver_gallery: 76172dc4bf6b40e66d694948ada9ff402304dd87
   url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5

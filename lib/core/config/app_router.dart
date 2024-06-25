@@ -4,6 +4,7 @@ import 'package:LuxCal/src/ui/screens/add_event_screen.dart';
 import 'package:LuxCal/src/ui/screens/add_news_screen.dart';
 import 'package:LuxCal/src/ui/screens/auth_screen.dart';
 import 'package:LuxCal/src/ui/screens/calendar_screen.dart';
+import 'package:LuxCal/src/ui/screens/event_gallery_screen.dart';
 import 'package:LuxCal/src/ui/screens/login_screen.dart';
 import 'package:LuxCal/src/ui/screens/nickname_screen.dart';
 import 'package:LuxCal/src/ui/screens/profile_screen.dart';
@@ -14,8 +15,6 @@ import 'package:LuxCal/src/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
-
-// GoRouter configuration
 
 final navigatorKey = GlobalKey<NavigatorState>();
 final storage = GetStorage();
@@ -65,6 +64,16 @@ GoRouter router = GoRouter(
       path: '/selectedEvent',
       builder: (context, state) =>
           SelectedEventScreen(eventModel: state.extra as EventModel),
+    ),
+    GoRoute(
+      path: '/event/:eventId/gallery',
+      builder: (context, state) {
+        final eventId = state.pathParameters['eventId']!;
+        final isMaker = state.uri.queryParameters['isMaker'] == 'true';
+
+        print('Event ID: $eventId, Is Maker: $isMaker');
+        return EventGalleryScreen(eventId: eventId, isMaker: isMaker);
+      },
     ),
   ],
 );

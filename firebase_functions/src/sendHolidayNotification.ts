@@ -2,64 +2,67 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import fetch from 'node-fetch';
 
+
 export const sendHolidayNotification = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-    const year = new Date().getFullYear();
-    const apiUrl = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&year=${year}&month=x`;
+    const apiUrl = 'https://www.hebcal.com/hebcal/?v=1&cfg=json&maj=on&min=on&mod=on&nx=on&year=now&month=x&ss=on&mf=on&c=on&geo=none&m=50&s=on';
 
     try {
         const response = await fetch(apiUrl);
-        const data = (await response.json()) as HolidayApiResponse; // Type assertion here
+        const data = (await response.json()) as HolidayApiResponse;
         
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Normalize today's date
-
-        const upcomingHolidays = data.items.filter((item) => {
+        
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        
+        // Filter holidays for today and tomorrow
+        const todayHolidays = data.items.filter(item => {
             const holidayDate = new Date(item.date);
             holidayDate.setHours(0, 0, 0, 0); // Normalize holiday date
-            // Check if the holiday is within the next 24 hours
             return holidayDate.getTime() === today.getTime();
         });
+        
+        const tomorrowHolidays = data.items.filter(item => {
+            const holidayDate = new Date(item.date);
+            holidayDate.setHours(0, 0, 0, 0); // Normalize holiday date
+            return holidayDate.getTime() === tomorrow.getTime();
+        });
 
-        if (upcomingHolidays.length > 0) {
-            const tokens = await fetchUserNotificationTokens();
+        // Prepare notifications for today
+        if (todayHolidays.length > 0) {
+            const todayMessage = {
+                notification: {
+                    title: 'Holiday Today!',
+                    body: `Don't forget about ${todayHolidays[0].title} today.`,
+                },
+                topic: 'notifications',
+            };
 
-            const messages = tokens.map((token: string) => ({
+            // Send notifications for today
+            await admin.messaging().send(todayMessage);
+        }
+        
+        // Prepare notifications for tomorrow
+        if (tomorrowHolidays.length > 0) {
+            const tomorrowMessage = {
                 notification: {
                     title: 'Upcoming Holiday!',
-                    body: `Don't forget about ${upcomingHolidays[0].title} tomorrow.`,
+                    body: `Don't forget about ${tomorrowHolidays[0].title} tomorrow.`,
                 },
-                token: token,
-            }));
+                topic: 'notifications',
+            };
 
-            // Send notifications to all tokens
-            admin.messaging().sendAll(messages)
-                .then((response) => {
-                    console.log('Successfully sent messages:', response);
-                })
-                .catch((error) => {
-                    console.log('Error sending messages:', error);
-                });
+            // Send notifications for tomorrow
+            await admin.messaging().send(tomorrowMessage);
         }
+
+        console.log('Successfully sent holiday notifications');
     } catch (error) {
         console.error("Failed to fetch holidays or send notifications", error);
     }
 });
 
-async function fetchUserNotificationTokens(): Promise<string[]> {
-    const db = admin.firestore();
-    const usersRef = db.collection('users');
-    const snapshot = await usersRef.get();
-    const tokens: string[] = [];
-  
-    snapshot.forEach(doc => {
-      const token = doc.data().fcmToken;
-      if (token) {
-        tokens.push(token);
-      }
-    });
-  
-    return tokens;
-  }
 // Define the structure of your API response
 interface HolidayApiResponse {
     title: string;
