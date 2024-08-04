@@ -33,17 +33,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Color selectedColor = AuthUtils.currentUser.nickNameColor ?? Colors.blue;
   final TextEditingController contactNameController = TextEditingController();
   List<UserModel> filteredContacts = [];
+
   @override
   void initState() {
     super.initState();
-    // Listen to changes in the search bar and filter contacts accordingly
     contactNameController.addListener(_filterContacts);
   }
 
   @override
   void dispose() {
-    contactNameController
-        .dispose(); // Don't forget to dispose of the controller
+    contactNameController.dispose();
     nicknameController.dispose();
     fullNameController.dispose();
     super.dispose();
@@ -64,15 +63,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _filterContacts() {
     final query = contactNameController.text.toLowerCase();
     final bloc = context.read<CalendarBloc>();
-    // Assuming your CalendarState has a 'contacts' list
     final allContacts = bloc.state.contacts ?? [];
     if (query.isEmpty) {
-      // If the search query is empty, display all contacts
       setState(() {
         filteredContacts = allContacts;
       });
     } else {
-      // Otherwise, filter contacts based on the query
       setState(() {
         filteredContacts = allContacts.where((contact) {
           return contact.fullName!.toLowerCase().contains(query) ||
@@ -98,11 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return CustomScaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: BlocBuilder<CalendarBloc, CalendarState>(
-                builder: (context, state) {
-              // Initialize filteredContacts with all contacts on state changes
-              // This assumes your state has a mechanism to indicate when contacts are ready/loaded
+          physics: AlwaysScrollableScrollPhysics(),
+          child: BlocBuilder<CalendarBloc, CalendarState>(
+            builder: (context, state) {
               if (state.contacts != null &&
                   contactNameController.text.isEmpty) {
                 filteredContacts = state.contacts!;
@@ -123,7 +117,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               );
-            })),
+            },
+          ),
+        ),
       ),
     );
   }
@@ -315,7 +311,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           shrinkWrap: true,
           itemCount: filteredContacts.length,
           itemBuilder: (context, index) {
-            return _contactTile(filteredContacts[index]);
+            final contact = filteredContacts[index];
+            if (contact.email == 'admin@luxcal.com') {
+              return SizedBox.shrink();
+            }
+            return _contactTile(contact);
           },
         );
       },

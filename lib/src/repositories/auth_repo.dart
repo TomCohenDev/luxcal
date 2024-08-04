@@ -2,6 +2,7 @@ import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/repositories/user_repo.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class BaseAuthRepository {
   Stream<auth.User?> get user;
@@ -9,15 +10,14 @@ abstract class BaseAuthRepository {
     required UserModel userModel,
     required String password,
   });
-  Future<void> logInWithEmail({
+  Future<UserCredential?> logInWithEmail({
     required String email,
     required String password,
   });
 
   Future<void> signOut();
 
-    Future<void> deleteAuthUser();
-
+  Future<void> deleteAuthUser();
 }
 
 class AuthRepository extends BaseAuthRepository {
@@ -58,15 +58,16 @@ class AuthRepository extends BaseAuthRepository {
   }
 
   @override
-  Future<void> logInWithEmail({
+  Future<UserCredential?> logInWithEmail({
     required String email,
     required String password,
   }) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      final userCreds = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      return userCreds;
     } on auth.FirebaseAuthException catch (e) {
       print(e.toString());
     }
@@ -80,12 +81,11 @@ class AuthRepository extends BaseAuthRepository {
     await _firebaseAuth.signOut();
   }
 
- Future<void> deleteAuthUser() async {
+  Future<void> deleteAuthUser() async {
     try {
       final currentUser = _firebaseAuth.currentUser;
 
       if (currentUser != null) {
-     
         await _userRepository.deleteUser(UserModel(uid: currentUser.uid));
 
         await currentUser.delete();
@@ -97,5 +97,3 @@ class AuthRepository extends BaseAuthRepository {
     }
   }
 }
-
-

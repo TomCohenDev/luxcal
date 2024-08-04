@@ -83,7 +83,8 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   }
 
   bool isAuther() {
-    return AuthUtils.currentUserId == widget.eventModel.authorId;
+    return (AuthUtils.currentUserId == widget.eventModel.authorId) ||
+        AuthUtils.isAppAdmin;
   }
 
   @override

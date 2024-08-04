@@ -48,7 +48,8 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
   }
 
   bool isAuther() {
-    return AuthUtils.currentUserId == widget.newsModel.authorId;
+    return (AuthUtils.currentUserId == widget.newsModel.authorId) ||
+        AuthUtils.isAppAdmin;
   }
 
   @override

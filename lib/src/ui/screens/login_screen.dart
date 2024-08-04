@@ -42,6 +42,14 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == AuthScreenStatus.success) {
           context.go('/splash');
         }
+        if (state.status == AuthScreenStatus.error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Invalid email or password'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
       builder: (context, state) {
         return CustomScaffold(

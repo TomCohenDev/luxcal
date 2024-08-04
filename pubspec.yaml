@@ -74,6 +74,9 @@ dependencies:
   kosher_dart: ^2.0.16
   restart_app: ^1.2.1
   saver_gallery: ^3.0.5
+  dio: ^5.5.0+1
+  gal: ^2.3.0
+  cupertino_hebrew_date_picker: ^0.0.2
 
 dev_dependencies:
   flutter_test:

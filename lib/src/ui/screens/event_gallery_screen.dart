@@ -1,11 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 
 class EventGalleryScreen extends StatefulWidget {
   final String eventId;
@@ -129,11 +136,39 @@ class FullImageScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _downloadImage(BuildContext context) async {
+    try {
+      final hasAccess = await Gal.requestAccess();
+      if (hasAccess) {
+        final imagePath =
+            '${Directory.systemTemp.path}/${imageUrl.split('/').last}.jpg';
+        await Dio().download('$imageUrl', imagePath);
+        await Gal.putImage(imagePath);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to gallery')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Permission denied')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving image: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: () => _downloadImage(context),
+          ),
           if (isMaker)
             IconButton(
               icon: Icon(Icons.delete),

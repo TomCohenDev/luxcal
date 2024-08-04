@@ -19,9 +19,14 @@ class AuthScreenCubit extends Cubit<AuthScreenState> {
       print(state.email);
       print(state.password);
 
-      await _authRepository.logInWithEmail(
+      final userCreds = await _authRepository.logInWithEmail(
           email: state.userModel!.email!, password: state.password);
-      emit(state.copyWith(status: AuthScreenStatus.success));
+
+      if (userCreds != null) {
+        emit(state.copyWith(status: AuthScreenStatus.success));
+      } else {
+        emit(state.copyWith(status: AuthScreenStatus.error));
+      }
     } catch (e) {
       print(e);
     }

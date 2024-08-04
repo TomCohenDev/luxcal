@@ -12,9 +12,11 @@ import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
+import 'package:LuxCal/src/utils/event_colors.dart';
 import 'package:LuxCal/src/utils/messenger.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
+import 'package:cupertino_hebrew_date_picker/cupertino_hebrew_date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -38,6 +40,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   DateTime? startDate;
   DateTime? endDate;
   String recurrence = "One Time";
+  bool isHebrew = false;
 
   final List<String> recurrenceOptions = [
     "One Time",
@@ -47,7 +50,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     "Once a Year"
   ];
 
-  Color pickedColor = Colors.red;
+  Color? pickedColor; // Red
   XFile? pickedImage;
 
   void _onButtonPress() {
@@ -79,14 +82,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
       authorNickname: AuthUtils.currentUser.nickName!,
       authorId: AuthUtils.currentUserId,
       recurrence: recurrence,
+      hebrewFormat: isHebrew,
     );
 
     context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
     context.pop();
     RestartWidget.restartApp(context);
     context.go('/calendar');
+  }
 
-    // context.go('/splash');
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pickedColor = customColors[0];
   }
 
   @override
@@ -149,6 +158,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
             )),
       );
 
+  TextButton hebrew_date_picker() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          isHebrew = !isHebrew;
+        });
+      },
+      child: Text(
+          !isHebrew ? "Change to Hebrew format" : "Change to Gregorian format",
+          style: TextStyle(
+              fontSize: 16, color: Color.fromARGB(255, 255, 28, 217))),
+    );
+  }
+
   Widget _colorFormField() {
     return Padding(
       padding: const EdgeInsets.only(top: 40.0),
@@ -165,15 +188,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 return AlertDialog(
                   backgroundColor: AppPalette.jacarta,
                   content: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
+                    padding: const EdgeInsets.only(left: 0.0),
                     child: MaterialColorPicker(
                       allowShades: false,
                       selectedColor: pickedColor,
-                      spacing: 15,
+                      colors: customColors,
+                      shrinkWrap: true,
+                      spacing: 8,
+                      alignment: WrapAlignment.center,
                       onMainColorChange: (colorSwatch) {
                         final int colorValue = colorSwatch!.value;
                         setState(() => pickedColor = Color(colorValue));
-                        context.pop();
+                        context
+                            .pop(); // Replace with Navigator.pop(context) if needed
                       },
                     ),
                   ),
@@ -197,9 +224,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            "Event Duration:",
-            style: AppTypography.textFieldText.copyWith(fontSize: 16),
+          child: Row(
+            children: [
+              Text(
+                "Event Duration:",
+                style: AppTypography.textFieldText.copyWith(fontSize: 16),
+              ),
+              hebrew_date_picker(),
+            ],
           ),
         ),
         spacer(10),
@@ -218,15 +250,32 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       children: [
                         InkWell(
                           onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                            );
-                            if (date != null) {
-                              setState(() {
-                                startDate = date;
-                              });
+                            if (isHebrew) {
+                              showHebrewCupertinoDatePicker(
+                                  confirmText: "Confirm",
+                                  context: context,
+                                  onDateChanged: (dateTime) {
+                                    print(dateTime);
+                                  },
+                                  // When the user click on the "Confirm" button, the onConfirm callback is called.
+                                  onConfirm: (dateTime) {
+                                    if (dateTime != null) {
+                                      setState(() {
+                                        startDate = dateTime;
+                                      });
+                                    }
+                                  });
+                            } else {
+                              final date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (date != null) {
+                                setState(() {
+                                  startDate = date;
+                                });
+                              }
                             }
                           },
                           child: Row(
@@ -250,15 +299,32 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         spacer(10),
                         InkWell(
                           onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                            );
-                            if (date != null) {
-                              setState(() {
-                                endDate = date;
-                              });
+                            if (isHebrew) {
+                              showHebrewCupertinoDatePicker(
+                                  confirmText: "Confirm",
+                                  context: context,
+                                  onDateChanged: (dateTime) {
+                                    print(dateTime);
+                                  },
+                                  // When the user click on the "Confirm" button, the onConfirm callback is called.
+                                  onConfirm: (dateTime) {
+                                    if (dateTime != null) {
+                                      setState(() {
+                                        endDate = dateTime;
+                                      });
+                                    }
+                                  });
+                            } else {
+                              final date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (date != null) {
+                                setState(() {
+                                  endDate = date;
+                                });
+                              }
                             }
                           },
                           child: Row(

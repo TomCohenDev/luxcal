@@ -21,6 +21,10 @@ class AuthUtils {
     return UserModel();
   }
 
+  static bool get isAppAdmin {
+    return currentUser.email == "admin@luxcal.com";
+  }
+
   static String get currentUserId {
     return (currentUser.uid)!;
   }

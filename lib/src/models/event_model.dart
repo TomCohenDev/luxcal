@@ -14,6 +14,7 @@ class EventModel {
   final String? authorName; // New field for author name
   final String? authorNickname; // New field for author nickname
   final String? recurrence;
+  final bool? hebrewFormat;
 
   EventModel(
       {required this.id,
@@ -22,6 +23,7 @@ class EventModel {
       required this.startDate,
       required this.endDate,
       this.location,
+      this.hebrewFormat,
       required this.color,
       this.imageUrl,
       this.authorId,
@@ -45,6 +47,7 @@ class EventModel {
       authorName: firestoreDoc['authorName'] as String, // New field
       authorNickname: firestoreDoc['authorNickname'] as String, // New field
       recurrence: (firestoreDoc['recurrence'] ?? "") as String,
+      hebrewFormat: (firestoreDoc['hebrewFormat'] ?? false) as bool,
     );
   }
 
@@ -57,6 +60,7 @@ class EventModel {
       endDate: DateTime.parse(json['date']),
       color: Color.fromARGB(255, 7, 85, 255),
       recurrence: json['recurrence'],
+      hebrewFormat: json['hebrewFormat'],
     );
   }
 
@@ -75,6 +79,7 @@ class EventModel {
       'authorName': authorName, // New field
       'authorNickname': authorNickname, // New field
       'recurrence': recurrence,
+      'hebrewFormat': hebrewFormat,
     };
   }
 
@@ -90,6 +95,7 @@ class EventModel {
     String? authorId,
     String? authorName,
     String? authorNickname,
+    hebrewFormat,
   }) {
     return EventModel(
       id: id ?? this.id,
@@ -104,6 +110,7 @@ class EventModel {
       authorName: authorName ?? this.authorName,
       authorNickname: authorNickname ?? this.authorNickname,
       recurrence: recurrence ?? this.recurrence,
+      hebrewFormat: hebrewFormat ?? this.hebrewFormat,
     );
   }
 
