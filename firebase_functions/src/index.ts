@@ -2,6 +2,7 @@
 import * as admin from 'firebase-admin';
 import { sendHolidayNotification } from './sendHolidayNotification';
 import { notifyUpcomingEvents } from './notifyUpcomingEvents';
+import { sendNewsNotification } from './sendNewsNotification';
 
 
 
@@ -9,4 +10,4 @@ import { notifyUpcomingEvents } from './notifyUpcomingEvents';
 
 admin.initializeApp();
 
-export { sendHolidayNotification, notifyUpcomingEvents };
+export { sendHolidayNotification, notifyUpcomingEvents, sendNewsNotification };
