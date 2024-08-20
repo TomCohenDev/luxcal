@@ -73,6 +73,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       return;
     }
 
+    _showLoadingDialog(); // Show the loading dialog
+
     // Create the new event
     final EventModel newEvent = EventModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -89,18 +91,41 @@ class _AddEventScreenState extends State<AddEventScreen> {
       hebrewFormat: isHebrew,
     );
 
-    // Add the event to the calendar
-    context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
+    try {
+      // Add the event to the calendar
+      context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
 
-    // If an image is picked, upload it to Firebase Storage and add to the event's gallery
-    if (pickedImage != null) {
-      await _uploadImagesToFirebase(newEvent.id, [pickedImage!]);
+      // If an image is picked, upload it to Firebase Storage and add to the event's gallery
+      if (pickedImage != null) {
+        await _uploadImagesToFirebase(newEvent.id, [pickedImage!]);
+      }
+
+      Navigator.pop(context); // Dismiss the loading dialog
+      context.pop(); // Navigate back or close current screen
+      RestartWidget.restartApp(context);
+      context.go('/calendar');
+    } catch (e) {
+      Navigator.pop(context); // Ensure to dismiss the dialog on error too
+      Utils.showSnackBar("Error processing your request: $e");
     }
+  }
 
-    // Navigate back to the calendar screen and restart the app (if necessary)
-    context.pop();
-    RestartWidget.restartApp(context);
-    context.go('/calendar');
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dialog from closing on tap outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Processing... Please wait"),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _uploadImagesToFirebase(
