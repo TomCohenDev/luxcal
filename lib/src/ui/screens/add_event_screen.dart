@@ -16,7 +16,9 @@ import 'package:LuxCal/src/utils/event_colors.dart';
 import 'package:LuxCal/src/utils/messenger.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cupertino_hebrew_date_picker/cupertino_hebrew_date_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -24,6 +26,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class AddEventScreen extends StatefulWidget {
   const AddEventScreen({super.key});
@@ -52,8 +55,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   Color? pickedColor; // Red
   XFile? pickedImage;
-
-  void _onButtonPress() {
+  void _onButtonPress() async {
     final isValid = _formKey.currentState!.validate();
     if (!isValid) return;
 
@@ -70,6 +72,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       Utils.showSnackBar("Invalid start and end dates");
       return;
     }
+
+    // Create the new event
     final EventModel newEvent = EventModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: titleController.text,
@@ -85,10 +89,60 @@ class _AddEventScreenState extends State<AddEventScreen> {
       hebrewFormat: isHebrew,
     );
 
+    // Add the event to the calendar
     context.read<CalendarBloc>().add(AddEvent(newEvent, pickedImage));
+
+    // If an image is picked, upload it to Firebase Storage and add to the event's gallery
+    if (pickedImage != null) {
+      await _uploadImagesToFirebase(newEvent.id, [pickedImage!]);
+    }
+
+    // Navigate back to the calendar screen and restart the app (if necessary)
     context.pop();
     RestartWidget.restartApp(context);
     context.go('/calendar');
+  }
+
+  Future<void> _uploadImagesToFirebase(
+      String eventId, List<XFile> images) async {
+    try {
+      for (var image in images) {
+        String fileName = path.basename(image.path);
+        Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('event_albums/$eventId/$fileName');
+
+        UploadTask uploadTask = storageRef.putFile(File(image.path));
+
+        // Monitor the upload progress
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          print(
+              'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+        }, onError: (e) {
+          // Handle error
+          print(uploadTask.snapshot);
+          if (e.code == 'permission-denied') {
+            print('User does not have permission to upload to this reference.');
+          }
+        });
+
+        // Wait until the upload completes
+        await uploadTask;
+
+        // Get the download URL
+        final downloadURL = await storageRef.getDownloadURL();
+        print('Download URL: $downloadURL');
+
+        // Save the download URL and path to Firestore
+        await FirebaseFirestore.instance
+            .collection('events')
+            .doc(eventId)
+            .collection('images')
+            .add({'path': storageRef.fullPath, 'url': downloadURL});
+      }
+    } catch (e) {
+      print('Error uploading images: $e');
+    }
   }
 
   @override
