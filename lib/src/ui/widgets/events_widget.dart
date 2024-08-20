@@ -311,7 +311,7 @@ class _EventsWidgetState extends State<EventsWidget> {
       children: [
         _tabContainer("Upcoming", 1),
         _tabContainer("News", 2),
-        _tabContainer("${state.selectedDay.day}.${state.selectedDay.month}", 3),
+        _tabContainer("${state.selectedDay.month}.${state.selectedDay.day}", 3),
       ],
     );
   }

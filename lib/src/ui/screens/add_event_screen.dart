@@ -288,8 +288,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               ),
                               Text(
                                 startDate != null
-                                    ? "${startDate!.day}/${startDate!.month}/${startDate!.year.toString().split('0')[1]}"
-                                    : "DD/MM/YY",
+                                    ? "${startDate!.month}/${startDate!.day}/${startDate!.year.toString().split('0')[1]}"
+                                    : "MM/DD/YY",
                                 style: AppTypography.textFieldText
                                     .copyWith(fontSize: 13),
                               ),
@@ -337,8 +337,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               ),
                               Text(
                                 endDate != null
-                                    ? "${endDate!.day}/${endDate!.month}/${endDate!.year.toString().split('0')[1]}"
-                                    : "DD/MM/YY",
+                                    ? "${endDate!.month}/${endDate!.day}/${endDate!.year.toString().split('0')[1]}"
+                                    : "MM/DD/YY",
                                 style: AppTypography.textFieldText
                                     .copyWith(fontSize: 13),
                               ),
