@@ -1,13 +1,17 @@
+import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
 import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/repositories/auth_repo.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:get_it/get_it.dart';
 
 part 'auth_screen_state.dart';
 
 class AuthScreenCubit extends Cubit<AuthScreenState> {
   final AuthRepository _authRepository;
+  final GetIt getIt = GetIt.instance;
+
   AuthScreenCubit({required AuthRepository authRepository})
       : _authRepository = authRepository,
         super(AuthScreenState.initial());

@@ -18,8 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription<UserModel?>? _userSubscription;
 
   AuthBloc({
-    required authRepository,
-    required userRepository,
+    required AuthRepository authRepository,
+    required UserRepository userRepository,
   })  : _authRepository = authRepository,
         _userRepository = userRepository,
         super(const AuthState.unknown()) {
@@ -28,36 +28,64 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<UserUpdated>(_onUserUpdated);
     on<DeleteUserRequest>(_onDeleteUserRequest);
 
-    _authUserSubscription = _authRepository.user.listen((authUser) {
+    // Listen to auth user changes
+    _initializeAuthUserListener();
+  }
+
+  void _initializeAuthUserListener() {
+    _authUserSubscription = _authRepository.user.listen((authUser) async {
       if (authUser != null) {
         print("auth user: ${authUser.email}");
-        _userRepository.getUser(authUser.uid).listen((userModel) {
+        _userSubscription =
+            _userRepository.getUser(authUser.uid).listen((userModel) {
           add(AuthUserChanged(authUser: authUser, userModel: userModel));
         });
       } else {
-        add(AuthUserChanged(authUser: authUser));
+        add(AuthUserChanged(authUser: null, userModel: null));
       }
     });
   }
 
-  void _onAuthUserChanged(AuthUserChanged event, Emitter<AuthState> emit) {
-    event.authUser != null && event.userModel != null
-        ? emit(AuthState.authenticated(
-            authUser: event.authUser!, userModel: event.userModel!))
-        : emit(const AuthState.unauthenticated());
+  void _onUserUpdated(UserUpdated event, Emitter<AuthState> emit) async {
+    try {
+      // Update the user in the repository
+      await _userRepository.updateUser(event.userModel);
+
+      // Emit the updated authenticated state with the new userModel
+      emit(AuthState.authenticated(
+        authUser: auth.FirebaseAuth.instance.currentUser!,
+        userModel: event.userModel,
+      ));
+    } catch (e) {
+      print('Error updating user: $e');
+      // Handle error as needed, possibly emit an error state or log it
+    }
+  }
+
+  void _onAuthUserChanged(
+      AuthUserChanged event, Emitter<AuthState> emit) async {
+    print(
+        'AuthUserChanged: authUser=${event.authUser?.email}, userModel=${event.userModel}');
+
+    if (event.authUser != null && event.userModel != null) {
+      print('AuthUserChanged: authenticated');
+
+      emit(AuthState.authenticated(
+        authUser: event.authUser!,
+        userModel: event.userModel!,
+      ));
+    } else {
+      print('AuthUserChanged: unauthenticated');
+      emit(const AuthState.unauthenticated());
+    }
   }
 
   void _onLogoutRequested(
       AuthLogoutRequested event, Emitter<AuthState> emit) async {
-    await _authRepository.signOut();
-    emit(const AuthState.unauthenticated());
-  }
+    print('Logout requested');
 
-  void _onUserUpdated(UserUpdated event, Emitter<AuthState> emit) async {
-    await UserRepository().updateUser(event.userModel);
-    emit(AuthState.authenticated(
-        authUser: auth.FirebaseAuth.instance.currentUser!,
-        userModel: event.userModel));
+    await _authRepository.signOut();
+    print('Logout completed, state set to unauthenticated');
   }
 
   @override
@@ -70,7 +98,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onDeleteUserRequest(
       DeleteUserRequest event, Emitter<AuthState> emit) async {
     await _authRepository.deleteAuthUser();
-
     emit(const AuthState.unauthenticated());
   }
 }

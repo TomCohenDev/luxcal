@@ -17,16 +17,20 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      // listenWhen: (previous, current) => previous.authUser != current.authUser,
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (context.read<AuthBloc>().state.authUser != null) {
-          if (AuthUtils.currentUser.nickName != null) {
-            context.go('/calendar');
+        print('SplashScreen: AuthState changed: ${state.status}');
+        if (state.status == AuthStatus.authenticated) {
+          print(state.userModel?.nickName);
+          if (state.userModel?.nickName != null ||
+              state.userModel?.email == 'admin@luxcal.com') {
+            context.push('/calendar');
           } else {
-            context.go('/nickname');
+            print('SplashScreen: No nickname found');
+            context.push('/nickname');
           }
-        } else {
-          context.go('/login');
+        } else if (state.status == AuthStatus.unauthenticated) {
+          context.push('/login');
         }
       },
       child: Container(

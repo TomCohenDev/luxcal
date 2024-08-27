@@ -1,5 +1,6 @@
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
+import 'package:LuxCal/main.dart';
 import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/models/event_model.dart';
@@ -20,9 +21,6 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-
-
-  
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CalendarBloc, CalendarState>(
@@ -77,7 +75,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               onTap: () {
                 context.read<AuthBloc>().add(AuthLogoutRequested());
-                context.go('/login');
               },
             ),
             Align(

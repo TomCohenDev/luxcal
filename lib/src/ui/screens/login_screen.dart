@@ -10,6 +10,7 @@ import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -27,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final isDev = true;
+
   @override
   void dispose() {
     emailController.dispose();
@@ -107,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           spacer(50),
           _luxIcon(),
+          if (isDev) _devLogin(),
           spacer(20),
           _header(),
           spacer(20),
@@ -118,6 +122,43 @@ class _LoginScreenState extends State<LoginScreen> {
           _signUp(),
         ],
       ),
+    );
+  }
+
+  Widget _devLogin() {
+    return ElevatedContainerCard(
+      child: Column(children: [
+        ElevatedButton(
+          onPressed: () {
+            emailController.text = 'admin@luxcal.com';
+            passwordController.text = 'luxcaladmin';
+            context
+                .read<AuthScreenCubit>()
+                .passwordChanged(passwordController.text);
+            context
+                .read<AuthScreenCubit>()
+                .userChanged(UserModel(email: emailController.text.trim()));
+
+            context.read<AuthScreenCubit>().logInWithCredentials();
+          },
+          child: Text('Login as Admin'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            emailController.text = 'tom.cohen99@gmail.com';
+            passwordController.text = '123456';
+            context
+                .read<AuthScreenCubit>()
+                .passwordChanged(passwordController.text);
+            context
+                .read<AuthScreenCubit>()
+                .userChanged(UserModel(email: emailController.text.trim()));
+
+            context.read<AuthScreenCubit>().logInWithCredentials();
+          },
+          child: Text('Login as Tom'),
+        ),
+      ]),
     );
   }
 
