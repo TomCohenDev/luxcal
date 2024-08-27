@@ -12,16 +12,23 @@ export const addShabbatEvent = functions.pubsub
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0); // Normalize today's date
 
+        // Calculate the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayOfWeek = currentDate.getDay();
+
+        // Calculate how many days until the next Friday
+        const daysUntilFriday = (5 - currentDayOfWeek + 7) % 7;
+        const daysUntilSaturday = (6 - currentDayOfWeek + 7) % 7;
+
         // Create event details for the next 4 weeks
         const shabbatEvents = [];
         for (let i = 0; i < 4; i++) {
             const startDate = new Date(currentDate);
-            startDate.setDate(currentDate.getDate() + (5 + (i * 7))); // Friday 17:00 in each of the next 4 weeks
-            startDate.setHours(17, 0, 0, 0); 
+            startDate.setDate(currentDate.getDate() + daysUntilFriday + (i * 7)); // Calculate the next Friday
+            startDate.setHours(17, 0, 0, 0); // Friday 17:00
 
             const endDate = new Date(currentDate);
-            endDate.setDate(currentDate.getDate() + (6 + (i * 7))); // Saturday 21:00 in each of the next 4 weeks
-            endDate.setHours(21, 0, 0, 0);
+            endDate.setDate(currentDate.getDate() + daysUntilSaturday + (i * 7)); // Calculate the next Saturday
+            endDate.setHours(21, 0, 0, 0); // Saturday 21:00
 
             const eventId = startDate.getTime().toString();
 
@@ -29,9 +36,9 @@ export const addShabbatEvent = functions.pubsub
                 id: eventId,
                 title: "Shabbat",
                 description: "",
-                startDate: startDate,
-                endDate: endDate,
-                color: "#6AC66B", // Lime Green
+                startDate: admin.firestore.Timestamp.fromDate(startDate),
+                endDate: admin.firestore.Timestamp.fromDate(endDate),
+                color: 4285187691, // Lime Green
                 hebrewFormat: false,
             };
 

@@ -43,9 +43,10 @@ class EventModel {
       location: firestoreDoc['location'] as String?,
       color:
           firestoreDoc['color'] != null ? Color(firestoreDoc['color']) : null,
-      authorId: firestoreDoc['authorId'] as String,
-      authorName: firestoreDoc['authorName'] as String, // New field
-      authorNickname: firestoreDoc['authorNickname'] as String, // New field
+      authorId: (firestoreDoc['authorId'] ?? "") as String,
+      authorName: (firestoreDoc['authorName'] ?? "") as String, // New field
+      authorNickname:
+          (firestoreDoc['authorNickname'] ?? "") as String, // New field
       recurrence: (firestoreDoc['recurrence'] ?? "") as String,
       hebrewFormat: (firestoreDoc['hebrewFormat'] ?? false) as bool,
     );
