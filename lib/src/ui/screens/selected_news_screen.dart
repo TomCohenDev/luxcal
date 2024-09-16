@@ -71,13 +71,19 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
               _buttonrow(context),
               IgnorePointer(
                 ignoring: !isAuther(),
-                child: Column(
-                  children: [
-                    _header(widget.newsModel.headline!),
-                    spacer(20),
-                    _form(),
-                    spacer(20),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 35.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: _header(widget.newsModel.headline!),
+                      ),
+                      spacer(20),
+                      _form(),
+                      spacer(20),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -212,9 +218,12 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
       );
 
   Text _header(String title) {
-    return Text(title,
-        style: GoogleFonts.getFont("Poppins",
-            fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold));
+    return Text(
+      title,
+      style: GoogleFonts.getFont("Poppins",
+          fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    );
   }
 
   Widget _buttonrow(BuildContext context) {

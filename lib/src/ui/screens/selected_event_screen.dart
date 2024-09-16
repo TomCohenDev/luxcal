@@ -97,23 +97,30 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
             alignment: Alignment.topCenter,
             children: [
               _buttonrow(context),
-              Column(
-                children: [
-                  IgnorePointer(
-                    ignoring: !isAuther(),
-                    child: Column(
-                      children: [
-                        _header(widget.eventModel.title!),
-                        spacer(20),
-                        _form(),
-                        spacer(20),
-                      ],
+              Padding(
+                padding: const EdgeInsets.only(top: 35.0),
+                child: Column(
+                  children: [
+                    IgnorePointer(
+                      ignoring: !isAuther(),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: _header(widget.eventModel.title!),
+                          ),
+                          spacer(20),
+                          _form(),
+                          spacer(20),
+                        ],
+                      ),
                     ),
-                  ),
 
-                  _imagePickerButton(), // Add this line
-                  _viewGalleryButton(), // Add this line
-                ],
+                    _imagePickerButton(), // Add this line
+                    _viewGalleryButton(), // Add this line
+                  ],
+                ),
               ),
             ],
           ),
@@ -519,9 +526,12 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   }
 
   Text _header(String title) {
-    return Text(title,
-        style: GoogleFonts.getFont("Poppins",
-            fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold));
+    return Text(
+      title,
+      style: GoogleFonts.getFont("Poppins",
+          fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    );
   }
 
   Widget _buttonrow(BuildContext context) {

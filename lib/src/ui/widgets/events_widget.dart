@@ -268,8 +268,21 @@ class _EventsWidgetState extends State<EventsWidget> {
     );
   }
 
+  String _shortenHeadline(String? headline, int maxLength) {
+    if (headline == null || headline.isEmpty) {
+      return 'No Title';
+    }
+    if (headline.length > maxLength) {
+      return headline.substring(0, maxLength) + '...';
+    }
+    return headline;
+  }
+
   Widget _newsTile(NewsModel news) {
     // Implementation of your news tile, similar to _eventTile...
+    // resize news.headline based on its length
+    String resizedHeadline = _shortenHeadline(news.headline, 23);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: InkWell(
@@ -288,7 +301,7 @@ class _EventsWidgetState extends State<EventsWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    news.headline ?? 'No Title',
+                    resizedHeadline,
                     style: AppTypography.calendarDays
                         .copyWith(fontSize: 18, fontWeight: FontWeight.w900),
                   ),
