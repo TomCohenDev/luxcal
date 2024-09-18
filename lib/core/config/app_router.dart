@@ -6,6 +6,7 @@ import 'package:LuxCal/src/ui/screens/auth_screen.dart';
 import 'package:LuxCal/src/ui/screens/calendar_screen.dart';
 import 'package:LuxCal/src/ui/screens/event_gallery_screen.dart';
 import 'package:LuxCal/src/ui/screens/login_screen.dart';
+import 'package:LuxCal/src/ui/screens/news_gallery_screen.dart';
 import 'package:LuxCal/src/ui/screens/nickname_screen.dart';
 import 'package:LuxCal/src/ui/screens/profile_screen.dart';
 import 'package:LuxCal/src/ui/screens/register_screen.dart';
@@ -73,6 +74,16 @@ GoRouter router = GoRouter(
 
         print('Event ID: $eventId, Is Maker: $isMaker');
         return EventGalleryScreen(eventId: eventId, isMaker: isMaker);
+      },
+    ),
+    GoRoute(
+      path: '/news/:newsId/gallery',
+      builder: (context, state) {
+        final newsId = state.pathParameters['newsId']!;
+        final isMaker = state.uri.queryParameters['isMaker'] == 'true';
+
+        print('News ID: $newsId, Is Maker: $isMaker');
+        return NewsGalleryScreen(newsId: newsId, isMaker: isMaker);
       },
     ),
   ],

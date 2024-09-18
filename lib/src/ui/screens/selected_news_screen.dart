@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
@@ -9,11 +11,15 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class SelectedNewsScreen extends StatefulWidget {
   final NewsModel newsModel;
@@ -82,6 +88,8 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
                       spacer(20),
                       _form(),
                       spacer(20),
+                      _imagePickerButton(),
+                      _viewGalleryButton(),
                     ],
                   ),
                 ),
@@ -90,6 +98,20 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _viewGalleryButton() {
+    final bool isMaker = AuthUtils.currentUserId ==
+        widget.newsModel
+            .authorId; // or however you determine if the user is the maker
+    return ElevatedButton(
+      onPressed: () {
+        print(widget.newsModel.id);
+        // Navigate to the gallery page
+        context.push('/news/${widget.newsModel.id}/gallery?isMaker=$isMaker');
+      },
+      child: Text("View Gallery"),
     );
   }
 
@@ -125,6 +147,66 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
           ),
         ],
       );
+
+  Widget _imagePickerButton() {
+    return isAuther()
+        ? ElevatedButton(
+            onPressed: () async {
+              final ImagePicker _picker = ImagePicker();
+              // Pick multiple images from the gallery
+              final List<XFile>? images = await _picker.pickMultiImage();
+
+              // If images are picked, handle the upload
+              if (images != null && images.isNotEmpty) {
+                await _uploadNewsImagesToFirebase(widget.newsModel.id!, images);
+              }
+            },
+            child: Text("Add Photos"),
+          )
+        : Container();
+  }
+
+  Future<void> _uploadNewsImagesToFirebase(
+      String newsId, List<XFile> images) async {
+    try {
+      for (var image in images) {
+        String fileName = path.basename(image.path);
+        Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('news_albums/$newsId/$fileName');
+
+        UploadTask uploadTask = storageRef.putFile(File(image.path));
+
+        // Monitor the upload progress
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+          print(
+              'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+        }, onError: (e) {
+          // Handle error
+          print(uploadTask.snapshot);
+          if (e.code == 'permission-denied') {
+            print('User does not have permission to upload to this reference.');
+          }
+        });
+
+        // Wait until the upload completes
+        await uploadTask;
+
+        // Get the download URL
+        final downloadURL = await storageRef.getDownloadURL();
+        print('Download URL: $downloadURL');
+
+        // Save the download URL and path to Firestore
+        await FirebaseFirestore.instance
+            .collection('news')
+            .doc(newsId)
+            .collection('images')
+            .add({'path': storageRef.fullPath, 'url': downloadURL});
+      }
+    } catch (e) {
+      print('Error uploading images: $e');
+    }
+  }
 
   Widget _autherFromField() => Stack(
         children: [

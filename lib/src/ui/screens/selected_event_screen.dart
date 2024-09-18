@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/models/event_model.dart';
-import 'package:LuxCal/src/models/news_model.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
@@ -12,13 +10,10 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
-import 'package:calendar_view/calendar_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,12 +34,10 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   late TextEditingController descriptionController;
   late String autherName;
   late String autherNickname;
-
   DateTime? startDate;
   DateTime? endDate;
   Color backgroundColor = Colors.red;
   Color fieldColor = Colors.red;
-
   XFile? pickedImage;
 
   @override
