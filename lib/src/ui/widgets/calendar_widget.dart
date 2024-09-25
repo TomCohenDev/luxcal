@@ -64,7 +64,7 @@ class CalendarWidget extends StatelessWidget {
         );
       },
     );
-    print(picked);
+    print("picked day $picked");
     if (picked != null && picked != focusedDay) {
       BlocProvider.of<CalendarBloc>(context)
           .add(YearSelected(focusedDay: picked));
@@ -83,8 +83,156 @@ class CalendarWidget extends StatelessWidget {
               final events = _groupEventsByDate(state.events!);
               return TableCalendar<EventModel>(
                 calendarBuilders: CalendarBuilders(
+                  defaultBuilder: (context, day, focusedDay) {
+                    final geoString =
+                        "${day.month.toString()}.${day.day.toString()}";
+                    final jewMonthString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[1];
+                    final jewDayString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[0];
+                    String hebrew = "$jewDayString $jewMonthString";
+                    if (jewMonthString.length > 4) {
+                      hebrew =
+                          "$jewDayString ${jewMonthString.substring(0, 4)}";
+                    }
+                    return Container(
+                      // margin: const EdgeInsets.all(4.0),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppPalette.jacarta,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(geoString,
+                              style: AppTypography.calendarDays
+                                  .copyWith(fontSize: 14)),
+                          Text(hebrew,
+                              style: AppTypography.calendarDays.copyWith(
+                                  fontSize: 11,
+                                  color: const Color.fromARGB(
+                                      174, 255, 255, 255))),
+                        ],
+                      ),
+                    );
+                  },
+                  selectedBuilder: (context, day, focusedDay) {
+                    final geoString =
+                        "${day.month.toString()}.${day.day.toString()}";
+                    final jewMonthString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[1];
+                    final jewDayString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[0];
+                    String hebrew = "$jewDayString $jewMonthString";
+                    if (jewMonthString.length > 4) {
+                      // take the first 4 characters from jewMonthString
+                      hebrew =
+                          "$jewDayString ${jewMonthString.substring(0, 4)}";
+                    }
+
+                    return Container(
+                        // margin: const EdgeInsets.all(4.0),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppPalette.teal,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(geoString,
+                                style: AppTypography.calendarDays
+                                    .copyWith(fontSize: 14)),
+                            Text(hebrew,
+                                style: AppTypography.calendarDays.copyWith(
+                                    fontSize: 11,
+                                    color: const Color.fromARGB(
+                                        174, 255, 255, 255))),
+                          ],
+                        ));
+                  },
+                  todayBuilder: (context, day, focusedDay) {
+                    final geoString =
+                        "${day.month.toString()}.${day.day.toString()}";
+                    final jewMonthString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[1];
+                    final jewDayString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[0];
+                    String hebrew = "$jewDayString $jewMonthString";
+                    if (jewMonthString.length > 4) {
+                      // take the first 4 characters from jewMonthString
+
+                      hebrew =
+                          "$jewDayString ${jewMonthString.substring(0, 4)}";
+                    }
+
+                    return Container(
+                        alignment: Alignment.topCenter,
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 77, 70, 116),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  spreadRadius: 1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3))
+                            ]),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(geoString,
+                                style: AppTypography.calendarDays
+                                    .copyWith(fontSize: 14)),
+                            Text(hebrew,
+                                style: AppTypography.calendarDays.copyWith(
+                                    fontSize: 11,
+                                    color: const Color.fromARGB(
+                                        174, 255, 255, 255))),
+                          ],
+                        ));
+                  },
                   markerBuilder: (context, date, events) {
-                    return _buildEventsMarker(date, events);
+                    return _buildEventsMarker(
+                        date, events, state.focusedDay, state.selectedDay);
+                  },
+                  outsideBuilder: (context, day, focusedDay) {
+                    final geoString =
+                        "${day.month.toString()}.${day.day.toString()}";
+                    final jewMonthString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[1];
+                    final jewDayString =
+                        JewishDate.fromDateTime(day).toString().split(' ')[0];
+                    String hebrew = "$jewDayString $jewMonthString";
+                    if (jewMonthString.length > 4) {
+                      // take the first 4 characters from jewMonthString
+
+                      hebrew =
+                          "$jewDayString ${jewMonthString.substring(0, 4)}";
+                    }
+
+                    return Container(
+                      // margin: const EdgeInsets.all(4.0),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppPalette.jacarta,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(geoString,
+                              style: AppTypography.calendarDays.copyWith(
+                                  fontSize: 14,
+                                  color: Color.fromARGB(97, 255, 255, 255))),
+                          Text(hebrew,
+                              style: AppTypography.calendarDays.copyWith(
+                                  fontSize: 11,
+                                  color: Color.fromARGB(73, 255, 255, 255))),
+                        ],
+                      ),
+                    );
                   },
                 ),
                 eventLoader: (date) {
@@ -117,9 +265,10 @@ class CalendarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildEventsMarker(DateTime date, List<EventModel> events) {
+  Widget _buildEventsMarker(DateTime date, List<EventModel> events,
+      DateTime focusedDay, DateTime selectedDay) {
     return Padding(
-        padding: const EdgeInsets.only(top: 30),
+        padding: const EdgeInsets.only(top: 44),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
@@ -127,8 +276,8 @@ class CalendarWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             final event = events[index];
             return Container(
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: event.color),
+              margin: const EdgeInsets.only(right: 2.0, bottom: 5, left: 2),
+              decoration: BoxDecoration(color: event.color),
               width: 9.0,
               height: 9.0,
             );
@@ -142,7 +291,7 @@ class CalendarWidget extends StatelessWidget {
         titleTextFormatter: (date, locale) {
           String hebMonthName = '';
           JewishDate jewishDate = JewishDate.fromDateTime(date);
-          print(jewishDate);
+          print("picked jew day $jewishDate");
           var parts = jewishDate.toString().split(' ');
 
           if (parts.length >= 3) {
@@ -164,10 +313,7 @@ class CalendarWidget extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(
-              Icons.chevron_left,
-              color: Colors.white,
-            )),
+            child: Icon(Icons.chevron_left, color: Colors.white)),
         rightChevronIcon: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -199,17 +345,15 @@ class CalendarWidget extends StatelessWidget {
         selectedDecoration:
             BoxDecoration(color: AppPalette.teal, shape: BoxShape.circle),
         todayDecoration: BoxDecoration(
-          color: const Color.fromARGB(255, 77, 70, 116),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
+            color: const Color.fromARGB(255, 77, 70, 116),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3))
+            ]),
         markerDecoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
