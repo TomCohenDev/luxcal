@@ -1,4 +1,4 @@
-package com.luxcal.luxcalapp
+package com.luxcal.app
 
 import io.flutter.embedding.android.FlutterActivity
 

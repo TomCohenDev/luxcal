@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:160053690034:android:6a3e94c81772967039d3ab",
+        "android_client_info": {
+          "package_name": "com.luxcal.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB09uw_Mp-oSbmNb9PNNglssPtAVYcyGf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:160053690034:android:b7b3aaeb3fc29bcd39d3ab",
         "android_client_info": {
           "package_name": "com.luxcal.luxcalapp"

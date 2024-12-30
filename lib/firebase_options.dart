@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB09uw_Mp-oSbmNb9PNNglssPtAVYcyGf0',
-    appId: '1:160053690034:android:b7b3aaeb3fc29bcd39d3ab',
+    appId: '1:160053690034:android:6a3e94c81772967039d3ab',
     messagingSenderId: '160053690034',
     projectId: 'luxcal-75a29',
     storageBucket: 'luxcal-75a29.appspot.com',
@@ -59,10 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDgaAHSHJcclXj7eoI-P9DDmlq8tMIDyUM',
-    appId: '1:160053690034:ios:ac62b5466c7a89a339d3ab',
+    appId: '1:160053690034:ios:6c6d6da0e31520f039d3ab',
     messagingSenderId: '160053690034',
     projectId: 'luxcal-75a29',
     storageBucket: 'luxcal-75a29.appspot.com',
-    iosBundleId: 'com.luxcal.luxcalapp',
+    iosBundleId: 'com.luxcal.app',
   );
+
 }

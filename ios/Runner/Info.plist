@@ -37,10 +37,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>In order to take a picture or video, this app requires permission to access the camera.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>In order to upload media, this app requires permission to access the photo library.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>photo</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>In order to upload media, this app requires permission to access the photo library.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

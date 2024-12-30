@@ -1,3 +1,5 @@
 {
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "dart.flutterSdkPath": "/Users/tomcohen/.puro/envs/luxcal/flutter",
+    "dart.sdkPath": "/Users/tomcohen/.puro/envs/luxcal/flutter/bin/cache/dart-sdk"
 }
