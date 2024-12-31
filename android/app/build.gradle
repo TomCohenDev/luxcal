@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         applicationId "com.luxcal.app"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode Integer.parseInt(project.hasProperty('flutterVersionCode') ? project.flutterVersionCode : "1")
         versionName project.hasProperty('flutterVersionName') ? project.flutterVersionName : "1.0"
