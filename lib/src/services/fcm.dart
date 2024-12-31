@@ -12,10 +12,15 @@ class FCM {
   }
 
   Future<void> getNotificationPermissions() async {
-    await _firebaseMessaging.requestPermission();
-    final fcmToken = await _firebaseMessaging.getToken();
-    final apnsToken = await _firebaseMessaging.getAPNSToken();
-    _firebaseMessaging.subscribeToTopic('notifications');
+    NotificationSettings permission =
+        await _firebaseMessaging.requestPermission(provisional: true);
+    if (permission.authorizationStatus == AuthorizationStatus.authorized) {
+      final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      if (apnsToken != null) {
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        _firebaseMessaging.subscribeToTopic('notifications');
+      }
+    }
   }
 
   Future<String?> getNotificationToken() async {

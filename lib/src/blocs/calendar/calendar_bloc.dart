@@ -13,7 +13,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kosher_dart/kosher_dart.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:restart_app/restart_app.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
