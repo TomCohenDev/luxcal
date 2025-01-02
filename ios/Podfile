@@ -1,5 +1,6 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '13.0'
+firebase_sdk_version = '11.0.0' # Lock Firebase SDK version
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -26,11 +27,19 @@ end
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
 
 flutter_ios_podfile_setup
-use_frameworks!
 
 target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'FirebaseCore', :modular_headers => true
+
+
+  pod 'Firebase/Core', firebase_sdk_version
+  pod 'Firebase/Auth', firebase_sdk_version
+  pod 'Firebase/Messaging', firebase_sdk_version
+  pod 'Firebase/Storage', firebase_sdk_version
+  pod 'Firebase/Firestore', firebase_sdk_version
+
 end
 
 $iOSVersion = '13.0'
