@@ -55,6 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       builder: (context, state) {
         return CustomScaffold(
+          extendBodyBehindAppBar: true,
           body: SingleChildScrollView(
             child: Stack(
               children: [
