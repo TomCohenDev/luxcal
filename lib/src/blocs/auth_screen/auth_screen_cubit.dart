@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:LuxCal/src/blocs/auth/auth_bloc.dart';
 import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/repositories/auth_repo.dart';
@@ -43,9 +45,14 @@ class AuthScreenCubit extends Cubit<AuthScreenState> {
     try {
       var authUser = await _authRepository.signUpWithEmail(
           userModel: userModel, password: pass);
-      emit(
-          state.copyWith(status: AuthScreenStatus.success, authUser: authUser));
+      if (authUser != null) {
+        emit(state.copyWith(
+            status: AuthScreenStatus.success, authUser: authUser));
+      } else {
+        emit(state.copyWith(status: AuthScreenStatus.error));
+      }
     } catch (e) {
+      emit(state.copyWith(status: AuthScreenStatus.error));
       print(e);
     }
   }

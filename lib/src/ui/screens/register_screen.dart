@@ -44,28 +44,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocConsumer<AuthScreenCubit, AuthScreenState>(
       listener: (context, state) {
-        if (state.status == AuthStatus.authenticated) {
-          context.go('/nickname');
+        if (state.status == AuthScreenStatus.success) {
+          context.go('/splash');
         }
+        // TODO: implement listener
       },
       builder: (context, state) {
-        return SafeArea(
-          child: CustomScaffold(
-            body: SingleChildScrollView(
-              child: Stack(
-                children: [
-                  SizedBox(
-                    height: context.height,
-                    width: context.width,
+        return BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return SafeArea(
+              child: CustomScaffold(
+                body: SingleChildScrollView(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        height: context.height,
+                        width: context.width,
+                      ),
+                      ..._backgroundCircles(),
+                      _body(context),
+                    ],
                   ),
-                  ..._backgroundCircles(),
-                  _body(context),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
