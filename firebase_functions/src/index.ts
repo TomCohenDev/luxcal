@@ -4,6 +4,7 @@ import { sendHolidayNotification } from './sendHolidayNotification';
 import { notifyUpcomingEvents } from './notifyUpcomingEvents';
 import { sendNewsNotification } from './sendNewsNotification';
 import { addShabbatEvent } from './addShabbatEvent';
+import { deleteUser } from './deleteUser';
 
 
 
@@ -12,4 +13,4 @@ import { addShabbatEvent } from './addShabbatEvent';
 
 admin.initializeApp();
 
-export { sendHolidayNotification, notifyUpcomingEvents, sendNewsNotification , addShabbatEvent};
+export { sendHolidayNotification, notifyUpcomingEvents, sendNewsNotification , addShabbatEvent , deleteUser } 

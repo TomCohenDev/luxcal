@@ -8,6 +8,7 @@ import 'package:LuxCal/src/ui/widgets/calendar_widget.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
 import 'package:LuxCal/src/ui/widgets/events_widget.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -31,22 +32,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return CustomScaffold(
           body: SafeArea(
             child: SingleChildScrollView(
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _header(),
-                      spacer(20),
-                      _calendar(context),
-                      _events(context),
-                    ],
-                  ),
-                  _contactsButton(context),
-                  _settingsButton(context)
-                ],
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: kIsWeb ? 100 : 0),
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _header(),
+                        spacer(20),
+                        _calendar(context),
+                        _events(context),
+                      ],
+                    ),
+                    _contactsButton(context),
+                    _settingsButton(context)
+                  ],
+                ),
               ),
             ),
           ),
@@ -77,23 +82,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 context.read<AuthBloc>().add(AuthLogoutRequested());
               },
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: ListTile(
-                leading: Icon(
-                  Icons.person_remove_outlined,
-                  color: Colors.white,
+            if (!kIsWeb)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ListTile(
+                  leading: Icon(
+                    Icons.person_remove_outlined,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    'Delete Account',
+                    style: AppTypography.mainButton,
+                  ),
+                  onTap: () {
+                    context.read<AuthBloc>().add(DeleteUserRequest());
+                    context.go('/login');
+                  },
                 ),
-                title: Text(
-                  'Delete Account',
-                  style: AppTypography.mainButton,
-                ),
-                onTap: () {
-                  context.read<AuthBloc>().add(DeleteUserRequest());
-                  context.go('/login');
-                },
               ),
-            ),
           ],
         ),
       ),

@@ -5,18 +5,27 @@ import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
+import 'package:LuxCal/src/ui/widgets/exportUserData.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
 import 'package:LuxCal/src/ui/widgets/textfield2.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/extensions.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
+import 'package:calendar_view/calendar_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,10 +35,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController nicknameController =
-      TextEditingController(text: AuthUtils.currentUser.nickName);
-  final TextEditingController fullNameController =
-      TextEditingController(text: AuthUtils.currentUser.fullName);
+  final TextEditingController nicknameController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
   Color selectedColor = AuthUtils.currentUser.nickNameColor ?? Colors.blue;
   final TextEditingController contactNameController = TextEditingController();
   List<UserModel> filteredContacts = [];
@@ -45,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     contactNameController.dispose();
     nicknameController.dispose();
     fullNameController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -106,14 +115,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 alignment: Alignment.topCenter,
                 children: [
                   _buttonrow(context),
-                  Column(
-                    children: [
-                      _header(),
-                      spacer(20),
-                      _searchBar(),
-                      spacer(20),
-                      _contactsList(),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kIsWeb ? 400 : 0.0),
+                    child: Column(
+                      children: [
+                        _header(),
+                        spacer(20),
+                        _searchBar(),
+                        spacer(20),
+                        _contactsList(),
+                      ],
+                    ),
                   ),
                 ],
               );
@@ -125,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Text _header() {
-    return Text('Contacts',
+    return Text(kIsWeb ? 'LuxCal Users' : 'Contacts',
         style: GoogleFonts.getFont("Poppins",
             fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold));
   }
@@ -149,7 +162,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 size: 30,
               ),
             ),
-            _profileButton(context),
+            if (!kIsWeb) _profileButton(context),
+            if (kIsWeb)
+              Padding(
+                padding: const EdgeInsets.only(right: 250.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Assuming that `state.contacts` is a List<UserModel>.
+                    final userList =
+                        context.read<CalendarBloc>().state.contacts;
+                    if (userList != null && userList.isNotEmpty) {
+                      exportUserDataToExcel(userList);
+                    } else {
+                      print("No user data available to export.");
+                    }
+                  },
+                  child: Text("Export to Excel"),
+                ),
+              ),
           ],
         ),
       ),
@@ -342,12 +372,220 @@ class _ProfileScreenState extends State<ProfileScreen> {
         subtitle: Text(nickname ?? "",
             style: AppTypography.buttonText
                 .copyWith(fontSize: 20, fontWeight: FontWeight.w200)),
-        trailing: Icon(FontAwesomeIcons.phone,
+        trailing: Icon(kIsWeb ? FontAwesomeIcons.gear : FontAwesomeIcons.phone,
             color: Colors.white), // phone icon on the right
         onTap: () async {
-          _makePhoneCall(contactModel.phoneNumber!);
+          fullNameController.text = contactModel.fullName!;
+          nicknameController.text = contactModel.nickName!;
+          phoneNumberController.text = contactModel.phoneNumber!;
+
+          if (kIsWeb) {
+            await showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  backgroundColor: Color(contactModel.nickNameColor!.value),
+                  content: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: IconButton(
+                              onPressed: () {
+                                context.pop();
+                                final userModel = contactModel.copyWith(
+                                  fullName: fullNameController.text,
+                                  nickName: nicknameController.text,
+                                  phoneNumber: phoneNumberController.text,
+                                );
+
+                                final _firestore = FirebaseFirestore.instance;
+                                _firestore
+                                    .collection('users')
+                                    .doc(contactModel.uid)
+                                    .update(userModel.toDocument());
+
+                                setState(() {});
+                              },
+                              icon: Icon(
+                                Icons.close,
+                                size: 30,
+                                color: Colors.white,
+                              )),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                              onPressed: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('Delete Contact'),
+                                        content: Text(
+                                            'Are you sure you want to delete this contact?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                            },
+                                            child: Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              context.pop();
+                                              // final _firestore =
+                                              //     FirebaseFirestore.instance;
+                                              // _firestore
+                                              //     .collection('users')
+                                              //     .doc(contactModel.uid)
+                                              //     .delete();
+                                              deleteUserViaHttp(
+                                                  contactModel.uid!);
+                                            },
+                                            child: Text('Delete'),
+                                          ),
+                                        ],
+                                      );
+                                    });
+                                context.pop();
+
+                                // context
+                                //     .read<AuthBloc>()
+                                //     .add(UserUpdated(userModel));
+                              },
+                              icon: Icon(
+                                Icons.delete,
+                                size: 30,
+                                color: Colors.white,
+                              )),
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text('Profile',
+                              style: GoogleFonts.getFont("Poppins",
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    spacer(15),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Nickname:",
+                            style: AppTypography.textFieldText
+                                .copyWith(fontSize: 16),
+                          ),
+                        ),
+                        spacer(10),
+                        Container(
+                          width: context.width * 0.25,
+                          child: EventFieldsTextfield(
+                            textField: TextField(
+                              controller: nicknameController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                  fillColor: getfieldColor(selectedColor)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    spacer(15),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Full Name:",
+                            style: AppTypography.textFieldText
+                                .copyWith(fontSize: 16),
+                          ),
+                        ),
+                        spacer(10),
+                        Container(
+                          width: context.width * 0.25,
+                          child: EventFieldsTextfield(
+                            textField: TextField(
+                              controller: fullNameController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                  fillColor: getfieldColor(selectedColor)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    spacer(10),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Phone Number:",
+                            style: AppTypography.textFieldText
+                                .copyWith(fontSize: 16),
+                          ),
+                        ),
+                        spacer(10),
+                        Container(
+                          width: context.width * 0.25,
+                          child: EventFieldsTextfield(
+                            textField: TextField(
+                              controller: phoneNumberController,
+                              keyboardType: TextInputType.name,
+                              decoration: InputDecoration(
+                                  fillColor: getfieldColor(selectedColor)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]),
+                );
+              },
+            );
+          } else {
+            _makePhoneCall(contactModel.phoneNumber!);
+          }
         },
       ),
     );
+  }
+
+  Future<void> deleteUserViaHttp(String uid) async {
+    final url = Uri.parse(
+        'https://us-central1-luxcal-75a29.cloudfunctions.net/deleteUser');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any required authentication headers here.
+        },
+        body: jsonEncode({'uid': uid}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(data['message']);
+      } else {
+        print('Error: ${response.statusCode} - ${response.body}');
+      }
+    } catch (error) {
+      print('Error deleting user via HTTP: $error');
+    }
   }
 }

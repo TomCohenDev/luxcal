@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
@@ -11,13 +12,11 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
@@ -35,11 +34,10 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
   late TextEditingController contentController;
   late String autherName;
   late String autherNickname;
-
   Color backgroundColor = Color(0xff875FC0);
   Color fieldColor = Color(0xff6533AB);
-
   XFile? pickedImage;
+  bool _isUploadingPhotos = false;
 
   @override
   void initState() {
@@ -47,7 +45,6 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
         TextEditingController(text: widget.newsModel.headline ?? "");
     contentController =
         TextEditingController(text: widget.newsModel.content ?? "");
-
     autherName = widget.newsModel.author;
     autherNickname = widget.newsModel.authorNickname;
     super.initState();
@@ -70,41 +67,55 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
     return CustomScaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              _buttonrow(context),
-              IgnorePointer(
-                ignoring: !isAuther(),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 35.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: _header(widget.newsModel.headline!),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  _buttonrow(context),
+                  IgnorePointer(
+                    ignoring: !isAuther(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 35.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: _header(widget.newsModel.headline!),
+                          ),
+                          spacer(20),
+                          _form(),
+                          spacer(20),
+                          _imagePickerButton(),
+                          spacer(20),
+                          _viewGalleryButton(),
+                        ],
                       ),
-                      spacer(20),
-                      _form(),
-                      spacer(20),
-                      _imagePickerButton(),
-                      _viewGalleryButton(),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Show loading overlay if photos are uploading
+            if (_isUploadingPhotos)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black54,
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
 
   Widget _viewGalleryButton() {
-    final bool isMaker = AuthUtils.currentUserId ==
-        widget.newsModel
-            .authorId; // or however you determine if the user is the maker
+    final bool isMaker = AuthUtils.currentUserId == widget.newsModel.authorId;
     return ElevatedButton(
       onPressed: () {
         print(widget.newsModel.id);
@@ -118,15 +129,16 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
   Widget _form() => Padding(
         padding: const EdgeInsets.only(right: 10, left: 10),
         child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                isAuther() ? _titleFromField() : _autherFromField(),
-                spacer(20),
-                _descriptionFromField(),
-              ],
-            )),
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              isAuther() ? _titleFromField() : _autherFromField(),
+              spacer(20),
+              _descriptionFromField(),
+            ],
+          ),
+        ),
       );
 
   Widget _titleFromField() => Column(
@@ -139,8 +151,10 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
               textField: TextField(
                 controller: headlineController,
                 keyboardType: TextInputType.name,
-                decoration:
-                    InputDecoration(fillColor: fieldColor, filled: true),
+                decoration: InputDecoration(
+                  fillColor: fieldColor,
+                  filled: true,
+                ),
               ),
               validator: (value) => Validators.eventTitleValidator(value),
             ),
@@ -155,10 +169,14 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
               final ImagePicker _picker = ImagePicker();
               // Pick multiple images from the gallery
               final List<XFile>? images = await _picker.pickMultiImage();
-
-              // If images are picked, handle the upload
               if (images != null && images.isNotEmpty) {
+                setState(() {
+                  _isUploadingPhotos = true;
+                });
                 await _uploadNewsImagesToFirebase(widget.newsModel.id!, images);
+                setState(() {
+                  _isUploadingPhotos = false;
+                });
               }
             },
             child: Text("Add Photos"),
@@ -175,15 +193,23 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
             .ref()
             .child('news_albums/$newsId/$fileName');
 
-        UploadTask uploadTask = storageRef.putFile(File(image.path));
+        UploadTask uploadTask;
+        if (kIsWeb) {
+          // Read as bytes and use putData for Web
+          final data = await image.readAsBytes();
+          uploadTask = storageRef.putData(data);
+        } else {
+          // Use putFile for mobile/desktop
+          uploadTask = storageRef.putFile(File(image.path));
+        }
 
         // Monitor the upload progress
         uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
           print(
               'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
         }, onError: (e) {
-          // Handle error
           print(uploadTask.snapshot);
+          // You might want to show a snackbar or similar for errors
           if (e.code == 'permission-denied') {
             print('User does not have permission to upload to this reference.');
           }
@@ -229,12 +255,12 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
             child: Row(
               children: [
                 Text(
-                  "${autherNickname}",
+                  "$autherNickname",
                   style: AppTypography.textFieldText,
                 ),
                 spacerWidth(20),
                 Text(
-                  "${autherName}",
+                  "$autherName",
                   style: AppTypography.textFieldTextLight,
                 ),
               ],
@@ -248,9 +274,31 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.newsModel.imageUrl != null)
-            ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.network(widget.newsModel.imageUrl!)),
+            Center(
+              child: Container(
+                width: context.width * 0.4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.network(
+                    widget.newsModel.imageUrl!,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 200,
+                        width: double.infinity,
+                        color: Colors.grey.shade300,
+                        child: Center(
+                          child: Text(
+                            'Image failed to load',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           spacer(10),
           Stack(
             children: [
@@ -277,11 +325,9 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
                   child: IconButton(
                       onPressed: () async {
                         final ImagePicker _picker = ImagePicker();
-                        // Pick an image from the gallery (or use .pickImage(source: ImageSource.camera) for taking a new photo)
+                        // Pick an image from the gallery
                         final XFile? image = await _picker.pickImage(
                             source: ImageSource.gallery);
-
-                        // If an image is picked, update the state with the new image
                         if (image != null) {
                           setState(() {
                             pickedImage = image;
@@ -330,7 +376,6 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
                   BlocProvider.of<CalendarBloc>(context).add(UpdateNews(
                       updatedNews: updatedNews, pickedImage: pickedImage));
                 }
-
                 context.pop();
               },
               child: Icon(
@@ -360,7 +405,7 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
                                     Color.fromARGB(255, 170, 20, 0),
-                                  ), // Replace with your color
+                                  ),
                                 ),
                                 onPressed: () {
                                   context.read<CalendarBloc>().add(
@@ -377,7 +422,7 @@ class _SelectedNewsScreenState extends State<SelectedNewsScreen> {
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
                                     Color.fromARGB(255, 134, 143, 216),
-                                  ), // Replace with your color
+                                  ),
                                 ),
                                 onPressed: () {
                                   context.pop();

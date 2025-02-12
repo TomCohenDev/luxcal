@@ -182,17 +182,25 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     try {
       String? imageUrl;
       if (event.image != null) {
+        // IMPORTANT: use putData(...) for cross-platform.
+        // So we read the bytes from XFile:
         imageUrl = await _uploadImageToStorage(
-            event.image!, 'news/${event.news.id}/image.jpg');
+          event.image!,
+          'news/${event.news.id}/image.jpg',
+        );
       }
 
+      // Add the doc with the optional imageUrl
       await _firestore
           .collection('news')
           .add(event.news.copyWith(imageUrl: imageUrl).toFirestore());
+
+      // Retrieve updated news
       List<NewsModel> updatedNews = await _getNews();
       emit(state.copyWith(news: updatedNews));
     } catch (error) {
       print(error);
+      // Possibly emit an error state or show an error message
     }
   }
 
@@ -425,24 +433,25 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         .toList();
   }
 
-// Assuming 'image' is an XFile object obtained from image_picker
   Future<String> _uploadImageToStorage(XFile image, String targetPath) async {
     try {
-      // Create a reference to the location you want to upload to in Firebase Storage
+      // 1. Read the bytes from the XFile (works on Web, iOS, and Android).
+      final data = await image.readAsBytes();
+
+      // 2. Create a reference to Firebase Storage.
       final ref = _storage.ref(targetPath);
 
-      // Upload the file
-      final uploadTask = await ref.putFile(File(image.path));
+      // 3. Upload the file bytes using putData instead of putFile.
+      final uploadTask = await ref.putData(data);
 
-      // Once the file upload is complete, get the download URL
+      // 4. Once the file upload is complete, get the download URL.
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      // Return the download URL of the image
+      // 5. Return the download URL of the image
       return downloadUrl;
     } catch (e) {
-      // If something goes wrong, log the error and rethrow or return a default value
-      print(e); // Consider logging to a service or console
-      throw e; // Or you might want to return a default image URL or an empty string
+      print(e); // Consider logging to a service or console.
+      throw e;
     }
   }
 }

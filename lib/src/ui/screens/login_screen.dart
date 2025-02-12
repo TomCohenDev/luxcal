@@ -9,6 +9,7 @@ import 'package:LuxCal/src/ui/widgets/splash_icon.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,16 +112,16 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           spacer(50),
           _luxIcon(),
-          if (isDev) _devLogin(),
+          // if (isDev) _devLogin(),
           spacer(20),
           _header(),
           spacer(20),
           _form(),
-          _forgotPass(),
+          if (!kIsWeb) _forgotPass(),
           spacer(20),
           _button(context),
           spacer(20),
-          _signUp(),
+          if (!kIsWeb) _signUp(),
         ],
       ),
     );
@@ -179,23 +180,45 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         ),
         onPressed: () {
-          context
-              .read<AuthScreenCubit>()
-              .passwordChanged(passwordController.text);
-          context
-              .read<AuthScreenCubit>()
-              .userChanged(UserModel(email: emailController.text.trim()));
-          final isValid = _formKey.currentState!.validate();
-          if (!isValid) return;
+          if (kIsWeb) {
+            final adminEmailText = 'admin@luxcal.com';
+            final passwordText = 'luxcaladmin';
+            if (emailController.text.trim() == adminEmailText &&
+                passwordController.text == passwordText) {
+              emailController.text = adminEmailText;
+              passwordController.text = passwordText;
+              context
+                  .read<AuthScreenCubit>()
+                  .passwordChanged(passwordController.text);
+              context
+                  .read<AuthScreenCubit>()
+                  .userChanged(UserModel(email: emailController.text.trim()));
+              context.read<AuthScreenCubit>().logInWithCredentials();
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Center(child: Text('Invalid admin credentials')),
+                backgroundColor: Colors.red,
+              ));
+            }
+          } else {
+            context
+                .read<AuthScreenCubit>()
+                .passwordChanged(passwordController.text);
+            context
+                .read<AuthScreenCubit>()
+                .userChanged(UserModel(email: emailController.text.trim()));
+            final isValid = _formKey.currentState!.validate();
+            if (!isValid) return;
 
-          context.read<AuthScreenCubit>().logInWithCredentials();
+            context.read<AuthScreenCubit>().logInWithCredentials();
+          }
         },
       ),
     );
   }
 
   Text _header() {
-    return Text('Login',
+    return Text(kIsWeb ? 'LuxCal Admin Control site' : 'Login',
         style: GoogleFonts.getFont("Poppins",
             fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold));
   }

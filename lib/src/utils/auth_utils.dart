@@ -26,6 +26,6 @@ class AuthUtils {
   }
 
   static String get currentUserId {
-    return (currentUser.uid)!;
+    return (currentUser.uid ?? "");
   }
 }

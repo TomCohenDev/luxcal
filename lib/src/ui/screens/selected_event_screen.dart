@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:LuxCal/src/utils/validators.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -39,6 +41,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   Color backgroundColor = Colors.red;
   Color fieldColor = Colors.red;
   XFile? pickedImage;
+  Uint8List? _imageBytes; // For cross-platform preview on Web
 
   @override
   void initState() {
@@ -71,13 +74,19 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
         (backgroundColor.green + 18 <= 255) ? backgroundColor.green + 18 : 255;
     int b =
         (backgroundColor.blue + 18 <= 255) ? backgroundColor.blue + 18 : 255;
-
     return Color.fromARGB(backgroundColor.alpha, r, g, b);
   }
 
   bool isAuther() {
-    return (AuthUtils.currentUserId == widget.eventModel.authorId) ||
-        AuthUtils.isAppAdmin;
+    if (kIsWeb) {
+      return true;
+    } else {
+      if (AuthUtils.isAppAdmin) {
+        return true;
+      } else {
+        return AuthUtils.currentUserId == widget.eventModel.authorId;
+      }
+    }
   }
 
   @override
@@ -109,9 +118,9 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                         ],
                       ),
                     ),
-
-                    _imagePickerButton(), // Add this line
-                    _viewGalleryButton(), // Add this line
+                    _imagePickerButton(), // Button to pick/upload photos
+                    spacer(20),
+                    _viewGalleryButton(), // Button to view gallery
                   ],
                 ),
               ),
@@ -125,39 +134,38 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   Widget _form() => Padding(
         padding: const EdgeInsets.only(right: 10, left: 10),
         child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                isAuther() ? _titleFromField() : _autherFromField(),
-                spacer(20),
-                _datesFromField(),
-                spacer(20),
-                _locationFromField(),
-                spacer(20),
-                _descriptionFromField(),
-              ],
-            )),
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              isAuther() ? _titleFromField() : _autherFromField(),
+              spacer(20),
+              _datesFromField(),
+              spacer(20),
+              _locationFromField(),
+              spacer(20),
+              _descriptionFromField(),
+            ],
+          ),
+        ),
       );
 
   Widget _datesFromField() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IntrinsicWidth(
-              child: ElevatedContainerCard(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IntrinsicWidth(
+                child: ElevatedContainerCard(
                   height: context.height * 0.1,
                   color: fieldColor,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         InkWell(
                           onTap: () async {
@@ -173,7 +181,6 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                             }
                           },
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "Start Date:   ",
@@ -182,7 +189,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                               ),
                               Text(
                                 startDate != null
-                                    ? "${startDate!.day}/${startDate!.month}/${startDate!.year.toString().split('0')[1]}"
+                                    ? "${startDate!.day}/${startDate!.month}/${startDate!.year}"
                                     : "DD/MM/YY",
                                 style: AppTypography.textFieldText
                                     .copyWith(fontSize: 13),
@@ -205,7 +212,6 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                             }
                           },
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "End Date:   ",
@@ -214,7 +220,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                               ),
                               Text(
                                 endDate != null
-                                    ? "${endDate!.day}/${endDate!.month}/${endDate!.year.toString().split('0')[1]}"
+                                    ? "${endDate!.day}/${endDate!.month}/${endDate!.year}"
                                     : "DD/MM/YY",
                                 style: AppTypography.textFieldText
                                     .copyWith(fontSize: 13),
@@ -224,18 +230,18 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                         )
                       ],
                     ),
-                  )),
-            ),
-            spacerWidth(10),
-            IntrinsicWidth(
-              child: ElevatedContainerCard(
+                  ),
+                ),
+              ),
+              spacerWidth(10),
+              IntrinsicWidth(
+                child: ElevatedContainerCard(
                   height: context.height * 0.1,
                   color: fieldColor,
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         InkWell(
                           onTap: () async {
@@ -251,7 +257,6 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                             }
                           },
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "Start Time:   ",
@@ -283,7 +288,6 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                             }
                           },
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
                                 "End Time:   ",
@@ -302,29 +306,25 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                         )
                       ],
                     ),
-                  )),
-            ),
-          ],
-        ),
-      ],
-    );
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ]);
   }
 
   Widget _titleFromField() => Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           spacer(10),
-          Container(
-            child: EventFieldsTextfield(
-              textField: TextField(
-                controller: titleController,
-                keyboardType: TextInputType.name,
-                decoration:
-                    InputDecoration(fillColor: fieldColor, filled: true),
-              ),
-              validator: (value) => Validators.eventTitleValidator(value),
+          EventFieldsTextfield(
+            textField: TextField(
+              controller: titleController,
+              keyboardType: TextInputType.name,
+              decoration: InputDecoration(fillColor: fieldColor, filled: true),
             ),
+            validator: (value) => Validators.eventTitleValidator(value),
           ),
         ],
       );
@@ -350,12 +350,12 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
             child: Row(
               children: [
                 Text(
-                  "${autherNickname}",
+                  "$autherNickname",
                   style: AppTypography.textFieldText,
                 ),
                 spacerWidth(20),
                 Text(
-                  "${autherName}",
+                  "$autherName",
                   style: AppTypography.textFieldTextLight,
                 ),
               ],
@@ -365,7 +365,6 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
       );
 
   Widget _locationFromField() => Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           spacer(10),
@@ -375,9 +374,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
               textField: TextField(
                 controller: locationController,
                 keyboardType: TextInputType.name,
-                decoration: InputDecoration(
-                  fillColor: fieldColor,
-                ),
+                decoration: InputDecoration(fillColor: fieldColor),
               ),
             ),
           ),
@@ -385,17 +382,22 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
       );
 
   Widget _descriptionFromField() => Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Show the event's current image if no new image is picked.
           if (widget.eventModel.imageUrl != null && pickedImage == null)
             ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.network(widget.eventModel.imageUrl!)),
+              borderRadius: BorderRadius.circular(30),
+              child: Image.network(widget.eventModel.imageUrl!),
+            ),
+          // If a new image is picked, show its preview.
           if (pickedImage != null)
             ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Image.asset(pickedImage!.path)),
+              borderRadius: BorderRadius.circular(30),
+              child: kIsWeb && _imageBytes != null
+                  ? Image.memory(_imageBytes!, fit: BoxFit.contain)
+                  : Image.file(File(pickedImage!.path), fit: BoxFit.contain),
+            ),
           spacer(10),
           Stack(
             children: [
@@ -409,9 +411,7 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                       maxLines: null,
                       controller: descriptionController,
                       keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                        fillColor: fieldColor,
-                      ),
+                      decoration: InputDecoration(fillColor: fieldColor),
                     ),
                   ),
                 ),
@@ -420,24 +420,30 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                 Align(
                   alignment: Alignment(0.95, 1),
                   child: IconButton(
-                      onPressed: () async {
-                        final ImagePicker _picker = ImagePicker();
-                        // Pick an image from the gallery (or use .pickImage(source: ImageSource.camera) for taking a new photo)
-                        final XFile? image = await _picker.pickImage(
-                            source: ImageSource.gallery);
-
-                        // If an image is picked, update the state with the new image
-                        if (image != null) {
+                    onPressed: () async {
+                      final ImagePicker _picker = ImagePicker();
+                      final XFile? image =
+                          await _picker.pickImage(source: ImageSource.gallery);
+                      if (image != null) {
+                        if (kIsWeb) {
+                          final bytes = await image.readAsBytes();
+                          setState(() {
+                            pickedImage = image;
+                            _imageBytes = bytes;
+                          });
+                        } else {
                           setState(() {
                             pickedImage = image;
                           });
                         }
-                      },
-                      icon: Icon(
-                        Icons.image,
-                        color: Colors.black,
-                        size: 40,
-                      )),
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.image,
+                      color: Colors.black,
+                      size: 40,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -449,15 +455,12 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
         ? ElevatedButton(
             onPressed: () async {
               final ImagePicker _picker = ImagePicker();
-              // Pick multiple images from the gallery
               final List<XFile>? images = await _picker.pickMultiImage();
-
-              // If images are picked, handle the upload
               if (images != null && images.isNotEmpty) {
                 await _uploadImagesToFirebase(widget.eventModel.id, images);
               }
             },
-            child: Text("Add Photos"),
+            child: const Text("Add Photos"),
           )
         : Container();
   }
@@ -471,33 +474,41 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
             .ref()
             .child('event_albums/$eventId/$fileName');
 
-        UploadTask uploadTask = storageRef.putFile(File(image.path));
+        UploadTask uploadTask;
+        if (kIsWeb) {
+          // On Web, use putData since File(image.path) doesn't work
+          final bytes = await image.readAsBytes();
+          uploadTask = storageRef.putData(bytes);
+        } else {
+          // On mobile/desktop, use putFile
+          uploadTask = storageRef.putFile(File(image.path));
+        }
 
-        // Monitor the upload progress
+        // Monitor the upload progress.
         uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
           print(
               'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
         }, onError: (e) {
-          // Handle error
           print(uploadTask.snapshot);
           if (e.code == 'permission-denied') {
             print('User does not have permission to upload to this reference.');
           }
         });
 
-        // Wait until the upload completes
+        // Wait until the upload completes.
         await uploadTask;
 
-        // Get the download URL
+        // Get the download URL and store it in Firestore.
         final downloadURL = await storageRef.getDownloadURL();
         print('Download URL: $downloadURL');
-
-        // Save the download URL and path to Firestore
         await FirebaseFirestore.instance
             .collection('events')
             .doc(eventId)
             .collection('images')
-            .add({'path': storageRef.fullPath, 'url': downloadURL});
+            .add({
+          'path': storageRef.fullPath,
+          'url': downloadURL,
+        });
       }
     } catch (e) {
       print('Error uploading images: $e');
@@ -505,24 +516,30 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
   }
 
   Widget _viewGalleryButton() {
-    final bool isMaker = AuthUtils.currentUserId ==
-        widget.eventModel
-            .authorId; // or however you determine if the user is the maker
+    bool isMaker = false;
+    if (AuthUtils.isAppAdmin) {
+      isMaker = true;
+    } else {
+      isMaker = AuthUtils.currentUserId == widget.eventModel.authorId;
+    }
     return ElevatedButton(
       onPressed: () {
         print(widget.eventModel.id);
-        // Navigate to the gallery page
         context.push('/event/${widget.eventModel.id}/gallery?isMaker=$isMaker');
       },
-      child: Text("View Gallery"),
+      child: const Text("View Gallery"),
     );
   }
 
   Text _header(String title) {
     return Text(
       title,
-      style: GoogleFonts.getFont("Poppins",
-          fontSize: 35, color: Colors.white, fontWeight: FontWeight.bold),
+      style: GoogleFonts.getFont(
+        "Poppins",
+        fontSize: 35,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
       textAlign: TextAlign.center,
     );
   }
@@ -534,11 +551,10 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
         padding: const EdgeInsets.only(top: 8.0, right: 10, left: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
           children: [
             InkWell(
               onTap: () {
-                final EventModel updatedEvents = widget.eventModel.copyWith(
+                final updatedEvent = widget.eventModel.copyWith(
                   title: titleController.text,
                   location: locationController.text,
                   description: descriptionController.text,
@@ -547,14 +563,14 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                 );
                 if (pickedImage != null) {
                   BlocProvider.of<CalendarBloc>(context).add(UpdateEvent(
-                      updatedEvent: updatedEvents, pickedImage: pickedImage));
+                      updatedEvent: updatedEvent, pickedImage: pickedImage));
                 } else {
                   BlocProvider.of<CalendarBloc>(context)
-                      .add(UpdateEvent(updatedEvent: updatedEvents));
+                      .add(UpdateEvent(updatedEvent: updatedEvent));
                 }
                 context.pop();
               },
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
                 size: 30,
@@ -569,50 +585,58 @@ class _SelectedEventScreenState extends State<SelectedEventScreen> {
                       return AlertDialog(
                         backgroundColor: AppPalette.jacarta,
                         title: Center(
-                          child: Text("Delete Event?",
-                              style: AppTypography.buttonText
-                                  .copyWith(fontSize: 24)),
+                          child: Text(
+                            "Delete Event?",
+                            style:
+                                AppTypography.buttonText.copyWith(fontSize: 24),
+                          ),
                         ),
                         content: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                    Color.fromARGB(255, 170, 20, 0),
-                                  ), // Replace with your color
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 170, 20, 0),
                                 ),
-                                onPressed: () {
-                                  context.read<CalendarBloc>().add(DeleteEvent(
-                                      eventId: widget.eventModel.id));
-                                  context.pop();
-                                  context.pop();
-                                },
-                                child: Text("Yes",
-                                    style: AppTypography.buttonText
-                                        .copyWith(fontSize: 16))),
+                              ),
+                              onPressed: () {
+                                context.read<CalendarBloc>().add(
+                                    DeleteEvent(eventId: widget.eventModel.id));
+                                context.pop();
+                                context.pop();
+                              },
+                              child: Text(
+                                "Yes",
+                                style: AppTypography.buttonText
+                                    .copyWith(fontSize: 16),
+                              ),
+                            ),
                             spacerWidth(20),
                             ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                    Color.fromARGB(255, 134, 143, 216),
-                                  ), // Replace with your color
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                  const Color.fromARGB(255, 134, 143, 216),
                                 ),
-                                onPressed: () {
-                                  context.pop();
-                                },
-                                child: Text("No",
-                                    style: AppTypography.buttonText
-                                        .copyWith(fontSize: 16)))
+                              ),
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: Text(
+                                "No",
+                                style: AppTypography.buttonText
+                                    .copyWith(fontSize: 16),
+                              ),
+                            )
                           ],
                         ),
                       );
                     },
                   );
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.delete,
                   color: Colors.black,
                   size: 30,

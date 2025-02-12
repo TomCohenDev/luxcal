@@ -1,91 +1,149 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:LuxCal/src/utils/auth_utils.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-
+import 'package:LuxCal/src/utils/screen_size.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gal/gal.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:saver_gallery/saver_gallery.dart';
+import '../../utils/download_all_zip.dart';
+import '../../utils/download_utils.dart';
 
 class NewsGalleryScreen extends StatefulWidget {
   final String newsId;
   final bool isMaker;
-  const NewsGalleryScreen(
-      {super.key, required this.newsId, required this.isMaker});
+  const NewsGalleryScreen({
+    Key? key,
+    required this.newsId,
+    required this.isMaker,
+  }) : super(key: key);
 
   @override
-  _EventGalleryScreenState createState() => _EventGalleryScreenState();
+  _NewsGalleryScreenState createState() => _NewsGalleryScreenState();
 }
 
-class _EventGalleryScreenState extends State<NewsGalleryScreen> {
+class _NewsGalleryScreenState extends State<NewsGalleryScreen> {
+  bool _isZipping = false;
+
+  /// Fetch all image URLs for the news doc from Firestore.
   Future<List<String>> _fetchImageUrls() async {
     List<String> imageUrls = [];
-
-    CollectionReference imagesRef = FirebaseFirestore.instance
+    final imagesRef = FirebaseFirestore.instance
         .collection('news')
         .doc(widget.newsId)
         .collection('images');
 
-    QuerySnapshot querySnapshot = await imagesRef.get();
-
+    final querySnapshot = await imagesRef.get();
     for (var doc in querySnapshot.docs) {
       imageUrls.add(doc['url']);
     }
-
     return imageUrls;
+  }
+
+  /// Zip and download all images as a single file
+  Future<void> _downloadAllAsZip() async {
+    try {
+      setState(() {
+        _isZipping = true;
+      });
+      final imageUrls = await _fetchImageUrls();
+      if (imageUrls.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No images found')),
+        );
+        return;
+      }
+      // Call the cross-platform zip function.
+      await downloadAllImagesAsZip(imageUrls, zipName: 'news_images.zip');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ZIP download complete')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error downloading ZIP: $e')),
+      );
+    } finally {
+      setState(() {
+        _isZipping = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gallery'),
+        title: const Text('Gallery'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            onPressed: _downloadAllAsZip,
+          ),
+        ],
       ),
-      body: FutureBuilder<List<String>>(
-        future: _fetchImageUrls(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading images'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No images found'));
-          } else {
-            final imageUrls = snapshot.data!;
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              itemCount: imageUrls.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FullImageScreen(
-                          imageUrl: imageUrls[index],
-                          isMaker: widget.isMaker,
+      body: Stack(
+        children: [
+          FutureBuilder<List<String>>(
+            future: _fetchImageUrls(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return const Center(child: Text('Error loading images'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No images found'));
+              } else {
+                final imageUrls = snapshot.data!;
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
+                  itemCount: imageUrls.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FullImageScreen(
+                              imageUrl: imageUrls[index],
+                              isMaker: widget.isMaker,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: context.width / 2,
+                          child: Image.network(
+                            imageUrls[index],
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                child: const Center(
+                                  child: Text(
+                                    'Failed to load',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.network(imageUrls[index]),
-                  ),
                 );
-              },
-            );
-          }
-        },
+              }
+            },
+          ),
+          if (_isZipping)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black54,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -94,39 +152,30 @@ class _EventGalleryScreenState extends State<NewsGalleryScreen> {
 class FullImageScreen extends StatelessWidget {
   final String imageUrl;
   final bool isMaker;
-  const FullImageScreen(
-      {super.key, required this.imageUrl, required this.isMaker});
+  const FullImageScreen({
+    Key? key,
+    required this.imageUrl,
+    required this.isMaker,
+  }) : super(key: key);
 
   Future<void> _deleteImage(BuildContext context) async {
     try {
-      // Find the document with the given URL
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collectionGroup('images')
           .where('url', isEqualTo: imageUrl)
           .get();
-
       if (querySnapshot.docs.isNotEmpty) {
-        // Get the document ID and path from the query snapshot
-        DocumentSnapshot docSnapshot = querySnapshot.docs.first;
-        String docId = docSnapshot.id;
+        final docSnapshot = querySnapshot.docs.first;
         String imagePath = docSnapshot['path'];
-
-        // Delete the image from Firestore
         await docSnapshot.reference.delete();
-
-        // Delete the image from Firebase Storage
         await FirebaseStorage.instance.ref(imagePath).delete();
-
-        // Show a confirmation message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image deleted successfully')),
+          const SnackBar(content: Text('Image deleted successfully')),
         );
-
-        // Navigate back to the previous screen
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image not found')),
+          const SnackBar(content: Text('Image not found')),
         );
       }
     } catch (e) {
@@ -138,21 +187,11 @@ class FullImageScreen extends StatelessWidget {
 
   Future<void> _downloadImage(BuildContext context) async {
     try {
-      final hasAccess = await Gal.requestAccess();
-      if (hasAccess) {
-        final imagePath =
-            '${Directory.systemTemp.path}/${imageUrl.split('/').last}.jpg';
-        await Dio().download('$imageUrl', imagePath);
-        await Gal.putImage(imagePath);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image saved to gallery')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Permission denied')),
-        );
-      }
+      final fileName = imageUrl.split('/').last.split('?').first;
+      await saveNetworkImage(imageUrl, fileName);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image saved to gallery')),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error saving image: $e')),
@@ -164,36 +203,35 @@ class FullImageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Image'),
         actions: [
           IconButton(
-            icon: Icon(Icons.download),
+            icon: const Icon(Icons.download),
             onPressed: () => _downloadImage(context),
           ),
           if (isMaker)
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () async {
-                // Confirm deletion
-                bool confirm = await showDialog(
+                final confirm = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Delete Image'),
-                    content:
-                        Text('Are you sure you want to delete this image?'),
+                    title: const Text('Delete Image'),
+                    content: const Text(
+                        'Are you sure you want to delete this image?'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: Text('Delete'),
+                        child: const Text('Delete'),
                       ),
                     ],
                   ),
                 );
-
-                if (confirm) {
+                if (confirm == true) {
                   await _deleteImage(context);
                 }
               },
@@ -201,7 +239,20 @@ class FullImageScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Image.network(imageUrl),
+        child: Image.network(
+          imageUrl,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey.shade300,
+              child: const Center(
+                child: Text(
+                  'Failed to load',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
