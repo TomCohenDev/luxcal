@@ -5,7 +5,6 @@ import 'package:LuxCal/src/models/user_model.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
 import 'package:LuxCal/src/ui/widgets/elevated_container_card.dart';
 import 'package:LuxCal/src/ui/widgets/event_fields_widget.dart';
-import 'package:LuxCal/src/ui/widgets/exportUserData.dart';
 import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
 import 'package:LuxCal/src/ui/widgets/textfield2.dart';
@@ -26,6 +25,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import '../widgets/export_user_data_stub.dart'
+    if (dart.library.html) '../widgets/exportUserData.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
