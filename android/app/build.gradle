@@ -28,8 +28,8 @@ android {
         applicationId "com.luxcal.app"
         minSdkVersion 23
         targetSdkVersion 34
-        versionCode  3 //Integer.parseInt(project.hasProperty('flutterVersionCode') ? project.flutterVersionCode : "1")
-        versionName "3.0" //project.hasProperty('flutterVersionName') ? project.flutterVersionName : "1.0"
+        versionCode  4 //Integer.parseInt(project.hasProperty('flutterVersionCode') ? project.flutterVersionCode : "1")
+        versionName "4.0" //project.hasProperty('flutterVersionName') ? project.flutterVersionName : "1.0"
     }
 
     signingConfigs {
