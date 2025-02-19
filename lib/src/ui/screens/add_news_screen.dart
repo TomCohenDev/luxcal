@@ -1,6 +1,8 @@
-import 'dart:typed_data'; // For Uint8List
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:LuxCal/core/theme/pallette.dart';
 import 'package:LuxCal/core/theme/typography.dart';
+import 'package:LuxCal/main.dart';
 import 'package:LuxCal/src/blocs/calendar/calendar_bloc.dart';
 import 'package:LuxCal/src/models/news_model.dart';
 import 'package:LuxCal/src/ui/widgets/custom_scaffold.dart';
@@ -9,6 +11,7 @@ import 'package:LuxCal/src/ui/widgets/spacer.dart';
 import 'package:LuxCal/src/ui/widgets/textfield.dart';
 import 'package:LuxCal/src/utils/auth_utils.dart';
 import 'package:LuxCal/src/utils/screen_size.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,13 +32,10 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
   final TextEditingController contentController = TextEditingController();
 
   XFile? pickedImage;
-  Uint8List? _imageBytes; // Used for cross-platform image preview
+  Uint8List? _imageBytes; // For cross-platform image preview on Web
   bool isUploading = false;
 
-  /// This method uses your original upload logic.
-  /// It dispatches the event to add the news, shows a loading overlay,
-  /// waits for a simulated upload (replace with your actual mechanism),
-  /// and then pops the screen.
+  /// Called when the user presses the check (FAB).
   Future<void> _onButtonPress() async {
     if (formKey.currentState?.validate() ?? false) {
       setState(() {
@@ -44,22 +44,22 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
 
       final newNews = NewsModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        author: AuthUtils.currentUser.fullName!,
+        author: AuthUtils.currentUser.fullName ?? "Admin",
         headline: headlineController.text,
         content: contentController.text,
         publicationDate: DateTime.now(),
         authorId: AuthUtils.currentUserId,
-        authorNickname: AuthUtils.currentUser.nickName!,
+        authorNickname: AuthUtils.currentUser.nickName ?? "Admin",
       );
 
       try {
-        // Dispatch your original upload event.
+        // Dispatch the event to add the news.
         context.read<CalendarBloc>().add(AddNews(newNews, pickedImage));
 
-        // Simulate waiting for the upload to complete.
+        // Simulate waiting for the upload (replace with real callback if available)
         await Future.delayed(const Duration(seconds: 2));
 
-        // After upload completes, pop the screen.
+        // Pop the screen after success.
         if (mounted) {
           context.pop();
         }
@@ -87,6 +87,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
       body: SafeArea(
         child: Stack(
           children: [
+            // Wrap the content in a SingleChildScrollView for scrollability.
             SingleChildScrollView(
               child: Column(
                 children: [
@@ -103,9 +104,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                 width: double.infinity,
                 height: double.infinity,
                 color: Colors.black54,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: const Center(child: CircularProgressIndicator()),
               ),
           ],
         ),
@@ -131,7 +130,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _headlineFormField(),
-              // Show image preview if an image is picked.
+              // Show thumbnail preview if an image is picked.
               if (_imageBytes != null) ...[
                 spacer(20),
                 Container(
@@ -162,10 +161,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         children: [
           Padding(
             padding: EdgeInsets.only(left: 8.0),
-            child: Text(
-              "Headline:",
-              style: AppTypography.textFieldText,
-            ),
+            child: Text("Headline:", style: AppTypography.textFieldText),
           ),
           spacer(10),
           Container(
@@ -174,9 +170,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
               textField: TextField(
                 controller: headlineController,
                 keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  labelText: "Headline",
-                ),
+                decoration: const InputDecoration(labelText: "Headline"),
               ),
             ),
           ),
@@ -188,10 +182,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         children: [
           Padding(
             padding: EdgeInsets.only(left: 8.0),
-            child: Text(
-              "Content:",
-              style: AppTypography.textFieldText,
-            ),
+            child: Text("Content:", style: AppTypography.textFieldText),
           ),
           spacer(10),
           Stack(
@@ -206,14 +197,12 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                       maxLines: null,
                       controller: contentController,
                       keyboardType: TextInputType.multiline,
-                      decoration: const InputDecoration(
-                        labelText: "Content",
-                      ),
+                      decoration: const InputDecoration(labelText: "Content"),
                     ),
                   ),
                 ),
               ),
-              // Image picker button.
+              // Image picker button (positioned in the lower right corner of the content field)
               Positioned(
                 right: 0,
                 bottom: 0,
@@ -223,6 +212,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                     final XFile? image =
                         await picker.pickImage(source: ImageSource.gallery);
                     if (image != null) {
+                      // Read image bytes for Web; on mobile, this still works.
                       final bytes = await image.readAsBytes();
                       setState(() {
                         pickedImage = image;
@@ -260,7 +250,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, right: 10, left: 10),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             InkWell(
               onTap: () => context.pop(),
