@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _header(),
           spacer(20),
           _form(),
-          if (!kIsWeb) _forgotPass(),
+          // if (!kIsWeb) _forgotPass(),
           spacer(20),
           _button(context),
           spacer(20),
