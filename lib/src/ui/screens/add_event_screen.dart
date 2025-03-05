@@ -90,7 +90,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         });
       },
       child: Text(
-        !isHebrew ? "Hebrew" : "Gregorian",
+        isHebrew ? "Hebrew" : "Gregorian",
         style: const TextStyle(
             fontSize: 16, color: Color.fromARGB(255, 255, 28, 217)),
       ),
@@ -335,7 +335,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         child: Row(
           children: [
             Text(
-              "Event Duration:",
+              "Format:",
               style: AppTypography.textFieldText.copyWith(fontSize: 16),
             ),
             _hebrewDatePicker(),
@@ -523,6 +523,63 @@ class _AddEventScreenState extends State<AddEventScreen> {
           ),
         ],
       ),
+      spacer(20),
+      Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              "Recurrence:",
+              style: AppTypography.textFieldText.copyWith(fontSize: 16),
+            ),
+          ),
+          spacerWidth(10),
+          ElevatedContainerCard(
+            height: 50,
+            width: 200,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: recurrence,
+                items: recurrenceOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    recurrence = newValue!;
+                  });
+                },
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+                dropdownColor: AppPalette.jacarta,
+                icon: Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.blue,
+                ),
+                iconSize: 30,
+                underline: Container(
+                  height: 2,
+                  color: Colors.transparent,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      spacer(10),
     ]);
   }
 
